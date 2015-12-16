@@ -1,0 +1,16 @@
+{
+    "name": "octava/geggs",
+    "description": "Git bunch",
+    "type": "project",
+    "require": {
+        "symfony/console": "^2.8"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vladimir Pak",
+            "email": "TheRatW@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}
