@@ -1,0 +1,10 @@
+parameters:
+    dir:
+        main: .
+
+    plugins:
+        pull: ~
+        add: ~
+        commit: ~
+        status: ~
+        push: ~

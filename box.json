@@ -1,0 +1,41 @@
+{
+    "directories": [
+        "src/"
+    ],
+    "files": [
+        "LICENSE",
+        "README.md",
+        "version",
+        "vendor/autoload.php",
+        "vendor/herrera-io/phar-update/res/schema.json"
+    ],
+    "finder": [
+        {
+            "name": [
+                "*.php",
+                "*.json",
+                "*.exe"
+            ],
+            "exclude": [
+                ".gitignore",
+                ".md",
+                "phpunit",
+                "Tester",
+                "Tests",
+                "tests",
+                "yaml"
+            ],
+            "in": ""
+        }
+    ],
+    "compactors": [
+        "Herrera\\Box\\Compactor\\Json",
+        "Herrera\\Box\\Compactor\\Php"
+    ],
+    "compression": "GZ",
+    "git-version": "3.0.7",
+    "main": "bin/geggs",
+    "output": "geggs.phar",
+    "stub": true,
+    "chmod": "0755"
+}
