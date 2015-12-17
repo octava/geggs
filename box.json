@@ -34,7 +34,7 @@
     ],
     "compression": "GZ",
     "git-version": "3.0.7",
-    "main": "bin/geggs",
+    "main": "app/console",
     "output": "geggs.phar",
     "stub": true,
     "chmod": "0755"

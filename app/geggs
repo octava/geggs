@@ -1,0 +1,24 @@
+#!/usr/bin/env php
+<?php
+$loaded = false;
+$dir = dirname(__DIR__).'/vendor/octava/geggs';
+foreach ([__DIR__.'/../../../autoload.php', dirname(__DIR__).'/vendor/autoload.php'] as $file) {
+    if (file_exists($file)) {
+        require $file;
+        $loaded = true;
+        break;
+    }
+}
+
+if (!$loaded) {
+    fwrite(
+        STDERR,
+        'You need to set up the project dependencies using the following commands:'.PHP_EOL.
+        'wget http://getcomposer.org/composer.phar'.PHP_EOL.
+        'php composer.phar install'.PHP_EOL
+    );
+    die(1);
+}
+
+$application = new AppKernel();
+$application->run();

@@ -1,0 +1,3 @@
+services:
+    octava_geggs.config:
+        class: Octava\Geggs\Config
