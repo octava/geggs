@@ -17,7 +17,8 @@
 # Managed by Composer
 /app/bootstrap.php.cache
 /var/bootstrap.php.cache
-/bin/
+/bin/*
+!/bin/geggs
 /vendor/
 
 # Assets and user uploads

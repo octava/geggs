@@ -33,8 +33,7 @@
         "Herrera\\Box\\Compactor\\Php"
     ],
     "compression": "GZ",
-    "git-version": "3.0.7",
-    "main": "app/console",
+    "main": "bin/geggs",
     "output": "geggs.phar",
     "stub": true,
     "chmod": "0755"

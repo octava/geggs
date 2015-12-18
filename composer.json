@@ -30,11 +30,11 @@
             "": "src/"
         },
         "files": [
-            "app/AppKernel.php"
+            "app/GeggsApplication.php"
         ]
     },
     "bin": [
-        "app/geggs"
+        "bin/geggs"
     ],
     "config": {
         "bin-dir": "bin"
