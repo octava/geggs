@@ -28,5 +28,6 @@ class OctavaGeggsExtension extends Extension
 
         $container->getDefinition('octava_geggs.config')
             ->addArgument($config);
+
     }
 }

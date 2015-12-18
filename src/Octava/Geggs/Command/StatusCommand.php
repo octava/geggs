@@ -64,7 +64,7 @@ class StatusCommand extends AbstractContainerCommand
      * @param $cmd
      * @param $io
      */
-    protected function runCommand($cmd, $io)
+    protected function runCommand($cmd, SymfonyStyle $io)
     {
         $process = new Process($cmd);
         $process->setTimeout(3600);

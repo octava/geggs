@@ -70,20 +70,22 @@ class GeggsApplication extends Application
      */
     protected function getConfigDefaultPath()
     {
-        if ($this->configDefaultPath) {
-            return $this->configDefaultPath;
-        }
+        if (!$this->configDefaultPath) {
+            $composerFile = 'composer.json';
+            if (file_exists($composerFile)) {
+                $composer = json_decode(file_get_contents($composerFile), true);
+                if (isset($composer['extra']['geggs']['config-default-path'])) {
+                    $this->configDefaultPath = $composer['extra']['geggs']['config-default-path'];
+                }
+            }
 
-        $this->configDefaultPath = getcwd().DIRECTORY_SEPARATOR.self::APP_CONFIG_FILE;
-        $composerFile = 'composer.json';
+            if (!file_exists($this->configDefaultPath)) {
+                $this->configDefaultPath = getcwd().DIRECTORY_SEPARATOR.self::APP_CONFIG_FILE;
 
-        if (!file_exists($composerFile)) {
-            return $this->configDefaultPath;
-        }
-
-        $composer = json_decode(file_get_contents($composerFile), true);
-        if (isset($composer['extra']['geggs']['config-default-path'])) {
-            $this->configDefaultPath = $composer['extra']['geggs']['config-default-path'];
+                if (!file_exists($this->configDefaultPath)) {
+                    $this->configDefaultPath = GEGGS_PATH.DIRECTORY_SEPARATOR.self::APP_CONFIG_FILE;
+                }
+            }
         }
 
         return $this->configDefaultPath;
@@ -109,6 +111,7 @@ class GeggsApplication extends Application
             $configPath = getcwd().DIRECTORY_SEPARATOR.$configPath;
         }
 
+        $this->container = new ContainerBuilder();
         $extension = new OctavaGeggsExtension();
         $this->container->registerExtension($extension);
 
