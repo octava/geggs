@@ -1,8 +1,9 @@
 {
     "name": "octava/geggs",
     "description": "Git eggs",
-    "license": "proprietary",
+    "license": "MIT",
     "type": "project",
+    "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
             "": "src/"

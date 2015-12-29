@@ -1,7 +1,0 @@
-octava_geggs:
-    resource: "@OctavaGeggsBundle/Resources/config/routing.yml"
-    prefix:   /
-
-app:
-    resource: "@AppBundle/Controller/"
-    type:     annotation
