@@ -1,0 +1,17 @@
+imports:
+    - { resource: services.yml }
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: en
+
+framework:
+    secret:          "geggs"
+
+zeichen32_git_lab_api:
+    clients:
+        firstclient:
+            token: your-api-token
+            url: http://example.org/api/v3/
+            auth_method: url_token

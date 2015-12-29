@@ -1,0 +1,59 @@
+{
+    "name": "octava/geggs",
+    "description": "Git eggs",
+    "license": "proprietary",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "": "src/"
+        },
+        "classmap": [
+            "app/AppKernel.php"
+        ]
+    },
+    "require": {
+        "php": ">=5.5.9",
+        "herrera-io/phar-update": "~2.0",
+        "kherge/amend": "^3.0",
+        "symfony/framework-bundle": "~3.0",
+        "zeichen32/gitlabapibundle": "^2.1",
+        "symfony/validator": "^3.0"
+    },
+    "require-dev": {
+        "sensio/generator-bundle": "^3.0",
+        "symfony/phpunit-bridge": "^2.7",
+        "symfony/var-dumper": "~3.0",
+        "phpro/grumphp": "^0.7.0",
+        "leaphub/phpcs-symfony2-standard": "^2.0",
+        "sensio/distribution-bundle": "^5.0",
+        "symfony/twig-bundle": "^3.0"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+        ],
+        "post-update-cmd": [
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+        ]
+    },
+    "bin": [
+        "bin/console"
+    ],
+    "config": {
+        "bin-dir": "bin"
+    },
+    "extra": {
+        "symfony-app-dir": "app",
+        "symfony-bin-dir": "bin",
+        "symfony-var-dir": "var",
+        "symfony-web-dir": "web",
+        "symfony-tests-dir": "tests",
+        "branch-alias": {
+            "dev-master": "3.0-dev"
+        }
+    }
+}
