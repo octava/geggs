@@ -38,6 +38,11 @@ class CommitCommand extends GitCommand
         if ($input->getOption('no-verify')) {
             $arguments[] = '--no-verify';
         }
+        foreach ($input->getOption('message') as $message) {
+            $arguments[] = '-m';
+            $arguments[] = $message;
+        }
+
         $cmd = $this->buildCommand($config->getMainDir(), $arguments);
         $io->section('Main directory');
         $io->note($config->getMainDir());

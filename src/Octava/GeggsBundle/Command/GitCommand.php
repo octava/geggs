@@ -44,7 +44,10 @@ abstract class GitCommand extends ContainerAwareCommand
 
             $io->text($process->getOutput());
         } catch (ProcessFailedException $e) {
-            $io->error($e->getProcess()->getErrorOutput());
+            $message = $e->getMessage();
+            if (false !== strpos($message, 'nothing to commit')) {
+                $io->error($e->getMessage());
+            }
         }
     }
 }
