@@ -45,12 +45,12 @@ class CommitCommand extends GitCommand
 
         $cmd = $this->buildCommand($config->getMainDir(), $arguments);
         $io->section('Main directory');
-        $io->writeln('<comment>> '.$config->getMainDir().'</comment>');
+        $io->comment('> '.$config->getMainDir());
         $this->runCommand($cmd, $io);
 
         $io->section('vendors');
         foreach ($config->getVendorDirs() as $dir) {
-            $io->writeln('<comment>> '.$config->makePathRelative($dir).'</comment>');
+            $io->comment('> '.$config->makePathRelative($dir));
             $cmd = $this->buildCommand($dir, $arguments);
             $this->runCommand($cmd, $io);
         }
