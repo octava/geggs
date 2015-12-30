@@ -2,8 +2,7 @@ octava_geggs:
     bin: git
     dir:
         main: .
-        vendors:
-            - vendor/v.pak
+        vendors: ~
 
     plugins:
         pull: ~

@@ -22,7 +22,7 @@ class VendorCreateCommand extends ContainerAwareCommand
         $this
             ->setName('vendor:create')
             ->addArgument('name', InputArgument::REQUIRED, 'Repository name for example: my_namespace/my_lib.git')
-            ->addOption('dir', null, InputOption::VALUE_REQUIRED, 'The directory where to create the bundle', 'vendor/')
+            ->addOption('dir', null, InputOption::VALUE_REQUIRED, 'The directory where to create the bundle', 'vendor')
             ->addOption('url', null, InputOption::VALUE_REQUIRED, 'Git url for example: https://github.com', '')
             ->setDescription('Create vendor');
     }
@@ -30,29 +30,59 @@ class VendorCreateCommand extends ContainerAwareCommand
     /**
      * @param InputInterface $input
      * @param OutputInterface|Output $output
-     * @return int
+     * @return void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
-        $io->title('Generate vendor library');
 
         $name = $input->getArgument('name');
-        $dir = $input->getOption('dir');
-        $url = $input->getOption('url');
 
+        $dir = $input->getOption('dir');
         $filesystem = $this->getContainer()->get('filesystem');
         if (!$filesystem->isAbsolutePath($dir)) {
             $dir = getcwd().'/'.$dir;
         }
 
-        $vendor = new Vendor($dir, $name, $url);
-        $generator = new VendorGenerator($filesystem);
+        $config = $this->getContainer()->get('octava_geggs.config');
+
+        $repositoryUrl = $input->getOption('url');
+        $vendor = new Vendor($dir, $name, $repositoryUrl);
+        $relativeTargetDirectory = $config->makePathRelative($vendor->getTargetDirectory());
+        $io->writeln(
+            sprintf(
+                '> Generating a sample vendor skeleton into <info>"%s"</info>',
+                $relativeTargetDirectory
+            )
+        );
+        $io->writeln(sprintf('> Repository url: %s', $repositoryUrl));
+
+        $generator = new VendorGenerator($filesystem, $config);
         $generator->setSkeletonDirs(__DIR__.'/../Resources/skeleton');
         $generator->generate($vendor);
 
         $io->success('Everything is OK! Now get to work :).');
+        $io->note(
+            [
+                'Remember you should push new vendor, before update composer.',
+                'Use `geggs push` command',
+                sprintf('Or push manually `cd "%s" && git push`', $relativeTargetDirectory),
+            ]
+        );
+    }
 
-        return 1;
+    protected function interact(InputInterface $input, OutputInterface $output)
+    {
+        $io = new SymfonyStyle($input, $output);
+        $io->writeln('Welcome to the vendor generator!');
+
+        $repositoryUrl = $input->getOption('url');
+        if (!$repositoryUrl) {
+            $repositoryUrl = $this->getContainer()->get('octava_geggs.config')->getGeneratorRepositoryUrl();
+        }
+        if (!$repositoryUrl) {
+            $repositoryUrl = $io->ask('Enter vendor repository url', 'git@github.com');
+            $input->setOption('url', $repositoryUrl);
+        }
     }
 }

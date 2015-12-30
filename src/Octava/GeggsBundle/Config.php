@@ -1,6 +1,9 @@
 <?php
 namespace Octava\GeggsBundle;
 
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
+
 /**
  * Class Config
  * @package Octava\GeggsBundle
@@ -14,9 +17,13 @@ class Config
 
     protected $mainDir = '.';
 
-    protected $vendorDirs = [];
+    protected $vendorDirs = null;
 
     protected $plugins = [];
+
+    protected $generator = [];
+
+    protected $config;
 
     /**
      * Config constructor.
@@ -24,8 +31,10 @@ class Config
      */
     public function __construct(array $config)
     {
+        $this->config = $config;
         $this->bin = $config['bin'];
         $this->mainDir = realpath($config['dir']['main']);
+        $this->generator = $config['generator'];
     }
 
     /**
@@ -42,5 +51,54 @@ class Config
     public function getMainDir()
     {
         return $this->mainDir;
+    }
+
+    public function getGeneratorRepositoryUrl()
+    {
+        return $this->generator['repository_url'];
+    }
+
+    public function getVendorDirs()
+    {
+        if (null === $this->vendorDirs) {
+            $this->initVendorDirs($this->config['dir']['vendors']);
+        }
+
+        return $this->vendorDirs;
+    }
+
+    /**
+     * Tries to make a path relative to the project, which prints nicer.
+     *
+     * @param $absolutePath
+     * @return mixed
+     */
+    public function makePathRelative($absolutePath)
+    {
+        return str_replace($this->getMainDir().'/', '', realpath($absolutePath) ?: $absolutePath);
+    }
+
+    private function initVendorDirs(array $dirs)
+    {
+        $this->vendorDirs = [];
+        $fileSystem = new Filesystem();
+
+        foreach ($dirs as $dir) {
+            $dir = $fileSystem->isAbsolutePath($dir) ?: $this->getMainDir().DIRECTORY_SEPARATOR.$dir;
+            if (!$fileSystem->exists($dir)) {
+                throw new \RuntimeException('Directory "%s" does not exists', $dir);
+            }
+            $finder = new Finder();
+            $finder
+                ->ignoreVCS(false)
+                ->ignoreDotFiles(false)
+                ->directories()
+                ->in($dir)
+                ->name('.git');
+            /** @var \Symfony\Component\Finder\SplFileInfo $file */
+            foreach ($finder as $file) {
+                $this->vendorDirs[] = $file->getPath();
+            }
+        }
     }
 }

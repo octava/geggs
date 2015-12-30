@@ -2,7 +2,6 @@
 namespace Octava\GeggsBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -20,7 +19,6 @@ class StatusCommand extends ContainerAwareCommand
     {
         $this
             ->setName('status')
-            ->addArgument('pathspec', InputArgument::IS_ARRAY, 'pathspec')
             ->setDescription('Git status');
     }
 
@@ -30,29 +28,31 @@ class StatusCommand extends ContainerAwareCommand
         $io->title($this->getDescription());
 
         $config = $this->getContainer()->get('octava_geggs.config');
-        $paths = $input->getArgument('pathspec');
 
-        $cmd = $this->buildCommand($config->getBin(), $config->getMainDir(), $paths);
+        $cmd = $this->buildCommand($config->getBin(), $config->getMainDir());
         $io->section('Main directory');
         $io->note($config->getMainDir());
         $this->runCommand($cmd, $io);
+
+        $io->section('vendors');
+        foreach ($config->getVendorDirs() as $dir) {
+            $io->note($config->makePathRelative($dir));
+            $cmd = $this->buildCommand($config->getBin(), $dir);
+            $this->runCommand($cmd, $io);
+        }
     }
 
     /**
      * @param $bin
      * @param $dir
-     * @param $paths
      * @return string
      */
-    protected function buildCommand($bin, $dir, array $paths = [])
+    protected function buildCommand($bin, $dir)
     {
         $builder = new ProcessBuilder();
         $builder->setPrefix($bin);
         $builder
             ->add('status');
-        foreach ($paths as $path) {
-            $builder->add($path);
-        }
 
         $cmd = $builder->getProcess()
             ->getCommandLine();

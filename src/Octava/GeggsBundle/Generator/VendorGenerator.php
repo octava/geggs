@@ -1,6 +1,7 @@
 <?php
 namespace Octava\GeggsBundle\Generator;
 
+use Octava\GeggsBundle\Config;
 use Octava\GeggsBundle\Model\Vendor;
 use Sensio\Bundle\GeneratorBundle\Generator\Generator;
 use Symfony\Component\Filesystem\Filesystem;
@@ -12,15 +13,23 @@ use Symfony\Component\Process\ProcessBuilder;
  */
 class VendorGenerator extends Generator
 {
+    /**
+     * @var Config
+     */
+    protected $config;
+    /**
+     * @var Filesystem
+     */
     private $filesystem;
 
     /**
      * VendorGenerator constructor.
      * @param Filesystem $filesystem
      */
-    public function __construct(Filesystem $filesystem)
+    public function __construct(Filesystem $filesystem, Config $config)
     {
         $this->filesystem = $filesystem;
+        $this->config = $config;
     }
 
     /**
@@ -92,7 +101,7 @@ class VendorGenerator extends Generator
     {
         $baseBuilder = new ProcessBuilder();
         $baseBuilder->setWorkingDirectory($vendor->getTargetDirectory());
-        $baseBuilder->setPrefix('git'); //TODO: bin from config
+        $baseBuilder->setPrefix($this->config->getBin());
 
         $builder = clone $baseBuilder;
         $builder->add('init');
@@ -114,7 +123,7 @@ class VendorGenerator extends Generator
     private function _checkRepositoryExists($repositoryUrl)
     {
         $builder = new ProcessBuilder();
-        $builder->setPrefix('git'); //TODO: bin from config
+        $builder->setPrefix($this->config->getBin());
         $builder
             ->add('ls-remote')
             ->add($repositoryUrl);
