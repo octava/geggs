@@ -30,7 +30,7 @@ class CommitCommand extends GitCommand
     {
         $io = new SymfonyStyle($input, $output);
         $io->title($this->getDescription());
-        $io->warning('git commit with flag --all');
+        $io->comment('git commit with flag --all');
 
         $config = $this->getContainer()->get('octava_geggs.config');
 
@@ -45,12 +45,12 @@ class CommitCommand extends GitCommand
 
         $cmd = $this->buildCommand($config->getMainDir(), $arguments);
         $io->section('Main directory');
-        $io->writeln('><comment>'.$config->getMainDir().'</comment>');
+        $io->writeln('<comment>> '.$config->getMainDir().'</comment>');
         $this->runCommand($cmd, $io);
 
         $io->section('vendors');
         foreach ($config->getVendorDirs() as $dir) {
-            $io->writeln('><comment>'.$config->makePathRelative($dir).'</comment>');
+            $io->writeln('<comment>> '.$config->makePathRelative($dir).'</comment>');
             $cmd = $this->buildCommand($dir, $arguments);
             $this->runCommand($cmd, $io);
         }
