@@ -13,4 +13,4 @@ octava_geggs:
         push: ~
 
     generator:
-#        repository_url: git@github.com
+        repository_url: git@github.com
