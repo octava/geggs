@@ -44,7 +44,7 @@
         ]
     },
     "bin": [
-        "bin/console"
+        "bin/geggs"
     ],
     "config": {
         "bin-dir": "bin"
