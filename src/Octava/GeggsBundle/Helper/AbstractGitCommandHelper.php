@@ -1,5 +1,5 @@
 <?php
-namespace Octava\GeggsBundle\Command;
+namespace Octava\GeggsBundle\Helper;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -8,13 +8,13 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
 /**
- * Class GitCommand
- * @package Octava\GeggsBundle\Command
+ * Class AbstractGitCommandHelper
+ * @package Octava\GeggsBundle\Helper
  */
-abstract class GitCommand extends ContainerAwareCommand
+abstract class AbstractGitCommandHelper extends ContainerAwareCommand
 {
     /**
-     * @param $dir
+     * @param       $dir
      * @param array $arguments
      * @return string
      */

@@ -1,12 +1,14 @@
 <?php
 namespace Octava;
 
+use Octava\GeggsBundle\Command\CommitCommand;
 use Octava\GeggsBundle\Command\StatusCommand;
 use Octava\GeggsBundle\DependencyInjection\OctavaGeggsExtension;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Filesystem\Filesystem;
@@ -65,7 +67,14 @@ class GeggsApplication extends Application
         $container = $this->getContainer();
         $commands = parent::getDefaultCommands();
 
-        $commands[] = new StatusCommand($container);
+        $commands[] = new StatusCommand();
+        $commands[] = new CommitCommand();
+
+        foreach ($commands as $command) {
+            if ($command instanceof ContainerAwareInterface) {
+                $command->setContainer($container);
+            }
+        }
 
         return $commands;
     }
