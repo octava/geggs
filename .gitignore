@@ -18,4 +18,5 @@
 !/bin/geggs
 
 /composer.phar
+/composer.lock
 /geggs.phar
