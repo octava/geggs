@@ -1,6 +1,8 @@
 <?php
-use Octava\Geggs\Command\StatusCommand;
-use Octava\Geggs\DependencyInjection\OctavaGeggsExtension;
+namespace Octava;
+
+use Octava\GeggsBundle\Command\StatusCommand;
+use Octava\GeggsBundle\DependencyInjection\OctavaGeggsExtension;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -9,6 +11,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Filesystem\Filesystem;
 
+/**
+ * Class GeggsApplication
+ */
 class GeggsApplication extends Application
 {
     const APP_NAME = 'Geggs';

@@ -9,7 +9,7 @@
             "": "src/"
         },
         "classmap": [
-            "app/AppKernel.php"
+            "app/GeggsApplication.php"
         ]
     },
     "require": {

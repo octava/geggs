@@ -1,13 +1,13 @@
 #!/usr/bin/env php
 <?php
-define('GEGGS_PATH', realpath(__DIR__ . '/..'));
+define('GEGGS_PATH', realpath(__DIR__.'/..'));
 
-$autoloadLocations = array(
-    getcwd() . '/vendor/autoload.php',
-    getcwd() . '/../../autoload.php',
-    __DIR__ . '/../vendor/autoload.php',
-    __DIR__ . '/../../../autoload.php',
-);
+$autoloadLocations = [
+    getcwd().'/vendor/autoload.php',
+    getcwd().'/../../autoload.php',
+    __DIR__.'/../vendor/autoload.php',
+    __DIR__.'/../../../autoload.php',
+];
 
 $loaded = false;
 foreach ($autoloadLocations as $autoload) {
@@ -18,13 +18,15 @@ foreach ($autoloadLocations as $autoload) {
 }
 
 if (!$loaded) {
-    fwrite(STDERR,
-        'You must set up the project dependencies, run the following commands:' . PHP_EOL .
-        'curl -s http://getcomposer.org/installer | php' . PHP_EOL .
-        'php composer.phar install' . PHP_EOL
+    fwrite(
+        STDERR,
+        'You must set up the project dependencies, run the following commands:'
+        .PHP_EOL.'curl -s http://getcomposer.org/installer | php'
+        .PHP_EOL.'php composer.phar install'
+        .PHP_EOL
     );
     exit(1);
 }
 
-$application = new GeggsApplication();
+$application = new \Octava\GeggsApplication();
 $application->run();
