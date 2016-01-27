@@ -1,3 +1,6 @@
+parameters:
+    octava_geggs.config.class: Octava\GeggsBundle\Config
+
 services:
     octava_geggs.config:
-        class: Octava\GeggsBundle\Config
+        class: %octava_geggs.config.class%

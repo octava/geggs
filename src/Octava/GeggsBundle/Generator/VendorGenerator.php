@@ -101,7 +101,7 @@ class VendorGenerator extends Generator
     {
         $baseBuilder = new ProcessBuilder();
         $baseBuilder->setWorkingDirectory($vendor->getTargetDirectory());
-        $baseBuilder->setPrefix($this->config->getBin());
+        $baseBuilder->setPrefix($this->config->getGitBin());
 
         $builder = clone $baseBuilder;
         $builder->add('init');
@@ -123,7 +123,7 @@ class VendorGenerator extends Generator
     private function _checkRepositoryExists($repositoryUrl)
     {
         $builder = new ProcessBuilder();
-        $builder->setPrefix($this->config->getBin());
+        $builder->setPrefix($this->config->getGitBin());
         $builder
             ->add('ls-remote')
             ->add($repositoryUrl);

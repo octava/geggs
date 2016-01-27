@@ -3,6 +3,7 @@ namespace Octava;
 
 use Octava\GeggsBundle\Command\CommitCommand;
 use Octava\GeggsBundle\Command\StatusCommand;
+use Octava\GeggsBundle\Command\TestCommand;
 use Octava\GeggsBundle\DependencyInjection\OctavaGeggsExtension;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application;
@@ -69,6 +70,7 @@ class GeggsApplication extends Application
 
         $commands[] = new StatusCommand();
         $commands[] = new CommitCommand();
+        $commands[] = new TestCommand();
 
         foreach ($commands as $command) {
             if ($command instanceof ContainerAwareInterface) {

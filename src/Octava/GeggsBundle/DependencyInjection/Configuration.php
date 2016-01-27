@@ -22,10 +22,11 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-            ->scalarNode('bin')
-            ->cannotBeEmpty()
-            ->defaultValue('git')
-            ->info('Git binary')
+            ->arrayNode('bin')
+            ->children()
+                ->scalarNode('git')->defaultValue('git')->cannotBeEmpty()->end()
+                ->scalarNode('composer')->defaultValue('composer')->cannotBeEmpty()->end()
+            ->end()
             ->end()
             ->end();
 

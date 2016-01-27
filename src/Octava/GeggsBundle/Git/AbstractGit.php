@@ -1,26 +1,39 @@
 <?php
-namespace Octava\GeggsBundle\Helper;
+namespace Octava\GeggsBundle\Git;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Style\SymfonyStyle;
+use Octava\GeggsBundle\Config;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
 /**
- * Class AbstractGitCommandHelper
- * @package Octava\GeggsBundle\Helper
+ * Class AbstractGit
+ * @package Octava\GeggsBundle\Git
  */
-abstract class AbstractGitCommandHelper extends ContainerAwareCommand
+class AbstractGit
 {
     /**
-     * @param       $dir
-     * @param array $arguments
+     * @var Config
+     */
+    protected $config;
+
+    /**
+     * AbstractGit constructor.
+     * @param Config $config
+     */
+    public function __construct(Config $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * @param string $dir
+     * @param array  $arguments
      * @return string
      */
     protected function buildCommand($dir, array $arguments)
     {
-        $bin = $config = $this->getContainer()->get('octava_geggs.config')->getGitBin();
+        $bin = $config = $this->config->getGitBin();
         $builder = ProcessBuilder::create($arguments);
         $builder->setPrefix($bin);
 
@@ -33,21 +46,22 @@ abstract class AbstractGitCommandHelper extends ContainerAwareCommand
 
     /**
      * @param $cmd
-     * @param $io
+     * @return Process
      */
-    protected function runCommand($cmd, SymfonyStyle $io)
+    protected function runCommand($cmd)
     {
         $process = new Process($cmd);
         $process->setTty(true);
         try {
             $process->mustRun();
 
-            $io->text($process->getOutput());
         } catch (ProcessFailedException $e) {
             $message = $e->getMessage();
             if (false !== strpos($message, 'nothing to commit')) {
-                $io->error($e->getMessage());
+                throw $e;
             }
         }
+
+        return $process;
     }
 }

@@ -7,9 +7,25 @@ namespace Octava\GeggsBundle\Model;
  */
 class Vendor
 {
+    const TYPE_ROOT = 'root';
+    const TYPE_VENDOR = 'vendor';
+
+    /**
+     * @var string
+     */
     protected $repositoryUrl;
+    /**
+     * @var string
+     */
     protected $targetDirectory;
+    /**
+     * @var string
+     */
     protected $name;
+
+    protected $changedFiles = [];
+
+    protected $addedFiles = [];
 
     /**
      * Vendor constructor.

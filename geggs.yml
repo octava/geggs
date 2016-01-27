@@ -1,5 +1,7 @@
 octava_geggs:
-    bin: git
+    bin:
+        git: git
+        composer: composer
     dir:
         main: .
         vendors: ~

@@ -40,9 +40,17 @@ class Config
     /**
      * @return string
      */
-    public function getBin()
+    public function getGitBin()
     {
-        return $this->bin;
+        return $this->bin['git'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getComposerBin()
+    {
+        return $this->bin['composer'];
     }
 
     /**
@@ -53,11 +61,17 @@ class Config
         return $this->mainDir;
     }
 
+    /**
+     * @return mixed
+     */
     public function getGeneratorRepositoryUrl()
     {
         return $this->generator['repository_url'];
     }
 
+    /**
+     * @return null
+     */
     public function getVendorDirs()
     {
         if (null === $this->vendorDirs) {
