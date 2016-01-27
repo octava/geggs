@@ -1,6 +1,7 @@
 <?php
 namespace Octava\GeggsBundle\Model;
 
+use Octava\GeggsBundle\Provider\AbstractProvider;
 use ReflectionMethod;
 
 /**
@@ -29,16 +30,39 @@ class RepositoryModel
     protected $rootPath;
 
     /**
+     * @var AbstractProvider
+     */
+    protected $provider;
+
+    /**
      * RepositoryModel constructor.
      * @param string $type
      * @param string $rootPath
      * @param string $path
+     * @param AbstractProvider $provider
      */
-    public function __construct($type, $rootPath, $path)
+    public function __construct($type, $rootPath, $path, AbstractProvider $provider)
     {
         $this->type = $type;
         $this->rootPath = $rootPath;
         $this->absolutePath = $path;
+        $this->provider = $provider;
+    }
+
+    /**
+     * @return AbstractProvider
+     */
+    public function getProvider()
+    {
+        return $this->provider;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string)$this->getPath();
     }
 
     /**
@@ -112,5 +136,25 @@ class RepositoryModel
         }
 
         return $result;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBranch()
+    {
+        $result = $this->getProvider()->run('rev-parse', ['--abbrev-ref', 'HEAD']);
+
+        return $result;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasChanges()
+    {
+        $raw = $this->getProvider()->run('status', ['--porcelain']);
+
+        return !empty($raw);
     }
 }

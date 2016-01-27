@@ -4,6 +4,7 @@ namespace Octava\GeggsBundle\Helper;
 use Octava\GeggsBundle\Config;
 use Octava\GeggsBundle\Git\Status;
 use Octava\GeggsBundle\Model\RepositoryModel;
+use Octava\GeggsBundle\Provider\GitProvider;
 
 /**
  * Class RepositoryFactory
@@ -33,11 +34,13 @@ class RepositoryFactory
     {
         $path = $this->config->getMainDir();
 
-        $model = new RepositoryModel(RepositoryModel::TYPE_ROOT, $path, $path);
+        $provider = new GitProvider($this->config, $path);
+        $model = new RepositoryModel(RepositoryModel::TYPE_ROOT, $path, $path, $provider);
         $result[] = $model;
 
         foreach ($this->config->getVendorDirs() as $path) {
-            $model = new RepositoryModel(RepositoryModel::TYPE_VENDOR, $this->config->getMainDir(), $path);
+            $provider = new GitProvider($this->config, $path);
+            $model = new RepositoryModel(RepositoryModel::TYPE_VENDOR, $this->config->getMainDir(), $path, $provider);
             $result[] = $model;
         }
 

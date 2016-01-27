@@ -1,59 +1,46 @@
 <?php
 namespace Octava\GeggsBundle\Command;
 
-use Octava\GeggsBundle\Helper\AbstractGitCommandHelper;
+use Octava\GeggsBundle\Helper\RepositoryFactory;
+use Octava\GeggsBundle\Plugin\BranchPlugin;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Class StatusCommand
+ * Class CommitCommand
  * @package Octava\GeggsBundle\Command
  */
-class CommitCommand extends AbstractGitCommandHelper
+class CommitCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
         $this
             ->setName('commit')
-            ->addOption(
-                'message',
-                'm',
-                InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-                'Use the given <msg> as the commit message. If multiple -m options are given, their values are concatenated as separate paragraphs.'
-            )
-            ->addOption('no-verify', null, InputOption::VALUE_NONE, 'To skip commit checks')
-            ->setDescription('Git commit');
+            ->setDescription('Commit command');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
-        $io->title($this->getDescription());
-        $io->comment('git commit with flag --all');
 
         $config = $this->getContainer()->get('octava_geggs.config');
+        $factory = new RepositoryFactory($this->getContainer()->get('octava_geggs.config'));
+        $list = $factory->buildRepositoryModelList();
 
-        $arguments = ['commit', '--all'];
-        if ($input->getOption('no-verify')) {
-            $arguments[] = '--no-verify';
-        }
-        foreach ($input->getOption('message') as $message) {
-            $arguments[] = '-m';
-            $arguments[] = $message;
-        }
-
-        $cmd = $this->buildCommand($config->getMainDir(), $arguments);
-        $io->section('Main directory');
-        $io->comment('> '.$config->getMainDir());
-        $this->runCommand($cmd, $io);
-
-        $io->section('vendors');
-        foreach ($config->getVendorDirs() as $dir) {
-            $io->comment('> '.$config->makePathRelative($dir));
-            $cmd = $this->buildCommand($dir, $arguments);
-            $this->runCommand($cmd, $io);
-        }
+        // проверить измененные файлы в директории
+        // если есть измененные - проверяем название ветки
+        // берем название проектной ветки
+        // собираем вендоры для которых нужно создать ветки
+        // если ветки есть - запрашиваем подстверждение
+        // запрашиваем комментарий, если не указан
+        // для каждого измененного репозитория создаем ветку (git checkout -b branch_name)
+        // коммитим
+        // пук
+        // вносим правки в composer.json
+        // коммитим проектный репозиторий
+        $branchPlugin = new BranchPlugin($config, $io);
+        $branchPlugin->execute($list);
     }
 }
