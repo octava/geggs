@@ -29,9 +29,15 @@ class ComposerPlugin extends AbstractPlugin
             }
         }
 
+
         if (!$this->isDryRun()) {
-            file_put_contents($composerFilename, json_encode($composerData, JSON_PRETTY_PRINT));
+            $jsonEncodedData = json_encode(
+                $composerData,
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+            );
+            file_put_contents($composerFilename, $jsonEncodedData);
         }
+
         $this->io->success('File composer.json updated');
     }
 }

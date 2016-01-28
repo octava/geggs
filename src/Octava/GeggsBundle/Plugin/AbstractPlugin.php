@@ -89,7 +89,7 @@ abstract class AbstractPlugin
      */
     public function isDryRun()
     {
-        return $this->getInput()->hasOption('dry-run') && !$this->getInput()->getOption('dry-run');
+        return $this->getInput()->hasOption('dry-run') && $this->getInput()->getOption('dry-run');
     }
 
     /**

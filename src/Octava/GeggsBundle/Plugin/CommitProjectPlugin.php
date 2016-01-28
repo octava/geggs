@@ -36,6 +36,8 @@ class CommitProjectPlugin extends AbstractPlugin
         $model = $repositories->getProjectModel();
         if ($model->hasChanges()) {
             $model->getProvider()->run('commit', ['-am', $comment], $this->isDryRun());
+        } else {
+            $this->getLogger()->debug('Changes not found');
         }
     }
 }

@@ -41,6 +41,8 @@ class CommitVendorPlugin extends AbstractPlugin
         foreach ($repositories->getVendorModels() as $model) {
             if ($model->hasChanges()) {
                 $model->getProvider()->run('commit', ['-am', $comment], $this->isDryRun());
+            } else {
+                $this->getLogger()->debug('Changes not found');
             }
         }
     }
