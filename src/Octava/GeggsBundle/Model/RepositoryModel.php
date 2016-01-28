@@ -136,7 +136,7 @@ class RepositoryModel
         $methods = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
 
         foreach ($methods as $method) {
-            if (0 === strpos($method->getName(), 'get')) {
+            if (0 === strpos($method->getName(), 'get') && !in_array($method->getName(), ['getProvider'])) {
                 $propertyName = lcfirst(substr($method->getName(), 3));
                 $result[$propertyName] = $method->invoke($this);
             }

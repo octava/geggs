@@ -37,7 +37,7 @@ class CommitCommand extends ContainerAwareCommand
         $io = new SymfonyStyle($input, $output);
 
         $config = $this->getContainer()->get('octava_geggs.config');
-        $factory = new RepositoryFactory($this->getContainer()->get('octava_geggs.config'), $logger);
+        $factory = new RepositoryFactory($config, $logger);
         $list = $factory->buildRepositoryModelList();
 
         $branchPlugin = new BranchPlugin($config, $io, $logger);

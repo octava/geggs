@@ -1,47 +1,36 @@
 <?php
 namespace Octava\GeggsBundle\Plugin;
 
-use Octava\GeggsBundle\Config;
-use Symfony\Component\Console\Style\SymfonyStyle;
+use Octava\GeggsBundle\Helper\RepositoryList;
 
 /**
  * Class ComposerPlugin
  * @package Octava\GeggsBundle\Plugin
  */
-class ComposerPlugin
+class ComposerPlugin extends AbstractPlugin
 {
-    /**
-     * @var Config
-     */
-    protected $config;
-    /**
-     * @var SymfonyStyle
-     */
-    protected $io;
 
     /**
-     * ComposerPlugin constructor.
-     * @param string       $type
-     * @param Config       $config
-     * @param SymfonyStyle $io
+     * @param RepositoryList $repositories
      */
-    public function __construct($type, Config $config, SymfonyStyle $io)
+    public function execute(RepositoryList $repositories)
     {
-        $this->config = $config;
-        $this->io = $io;
-    }
+        $composerFilename = $repositories->getProjectModel()->getAbsolutePath().DIRECTORY_SEPARATOR.'composer.json';
+        $data = json_decode(file_get_contents($composerFilename), true);
 
-    /**
-     * Update composer
-     * @return void
-     */
-    public function execute()
-    {
+        // --- dump ---
+        echo '<pre>';
+        echo __FILE__.chr(10);
+        echo __METHOD__.chr(10);
+        var_dump($data);
+        echo '</pre>';
+        // --- // ---
+
         $composerData = $this->loadComposerJsonData();
 
-        foreach ($this->config->getVendorDirs() as $dir) {
-            $this->modifyRequire($dir, $composerData);
-            $this->modifyrepositories($dir, $composerData);
+        foreach ($repositories->getVendorModels() as $model) {
+//            $this->modifyRequire($dir, $composerData);
+//            $this->modifyrepositories($dir, $composerData);
         }
 
         $this->modifyComposerJson($composerData);

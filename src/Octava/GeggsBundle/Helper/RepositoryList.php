@@ -1,10 +1,7 @@
 <?php
 namespace Octava\GeggsBundle\Helper;
 
-use Octava\GeggsBundle\Config;
 use Octava\GeggsBundle\Model\RepositoryModel;
-use Octava\GeggsBundle\Provider\GitProvider;
-use Symfony\Bridge\Monolog\Logger;
 
 /**
  * Class RepositoryList
@@ -56,4 +53,3 @@ class RepositoryList
         return [$this->projectModel] + $this->vendorModels;
     }
 }
-
