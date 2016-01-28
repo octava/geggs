@@ -35,6 +35,7 @@ class StatusCommand extends AbstractGitCommandHelper
         $logger = new Logger($this->getName());
         $logger->pushHandler(new ConsoleHandler($output));
         $logger->pushProcessor(new MemoryPeakUsageProcessor());
+        $logger->debug('Start', ['command_name' => $this->getName()]);
 
         $io = new SymfonyStyle($input, $output);
         $io->writeln('');
@@ -48,21 +49,23 @@ class StatusCommand extends AbstractGitCommandHelper
         foreach ($list->getAll() as $item) {
             $status = $item->getRawStatus();
             if (!empty($status)) {
+                $branch = $item->getBranch();
                 if ($item->getType() === RepositoryModel::TYPE_ROOT) {
                     $io->writeln(
-                        sprintf('<info>project repository</info> <question>[%s]</question>', $item->getBranch())
+                        sprintf('<info>project repository</info> <question>[%s]</question>', $branch)
                     );
                 } else {
-                    if ($projectBranch === $item->getBranch()) {
+
+                    if ($projectBranch === $branch) {
                         $io->writeln(
-                            sprintf('<info>%s</info> <question>[%s]</question>', $item->getPath(), $item->getBranch())
+                            sprintf('<info>%s</info> <question>[%s]</question>', $item->getPath(), $branch)
                         );
                     } else {
                         $io->writeln(
                             sprintf(
                                 '<info>%s</info> <error>[%s -> %s]</error>',
                                 $item->getPath(),
-                                $item->getBranch(),
+                                $branch,
                                 $projectBranch
                             )
                         );
@@ -76,5 +79,7 @@ class StatusCommand extends AbstractGitCommandHelper
         if (!$hasChanges) {
             $io->writeln('<comment>nothing to commit</comment>');
         }
+
+        $logger->debug('Finish', ['command_name' => $this->getName()]);
     }
 }

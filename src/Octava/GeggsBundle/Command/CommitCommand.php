@@ -35,7 +35,6 @@ class CommitCommand extends ContainerAwareCommand
         $logger = new Logger($this->getName());
         $logger->pushHandler(new ConsoleHandler($output));
         $logger->pushProcessor(new MemoryPeakUsageProcessor());
-
         $logger->debug('Start', ['command_name' => $this->getName()]);
 
         $io = new SymfonyStyle($input, $output);
