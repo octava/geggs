@@ -3,6 +3,7 @@ namespace Octava\GeggsBundle\Plugin;
 
 use Octava\GeggsBundle\Config;
 use Octava\GeggsBundle\Helper\LoggerTrait;
+use Octava\GeggsBundle\Helper\RepositoryList;
 use Octava\GeggsBundle\Model\RepositoryModel;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -42,9 +43,9 @@ abstract class AbstractPlugin
     }
 
     /**
-     * @param RepositoryModel[] $repositories
+     * @param RepositoryList $repositories
      */
-    abstract public function execute(array $repositories);
+    abstract public function execute(RepositoryList $repositories);
 
     /**
      * @return $this

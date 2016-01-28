@@ -44,7 +44,7 @@ class StatusCommand extends AbstractGitCommandHelper
         $factory = new RepositoryFactory($config, $logger);
         $list = $factory->buildRepositoryModelList();
 
-        foreach ($list as $item) {
+        foreach ($list->getAll() as $item) {
             $io->section($item->getPackageName());
             $io->note($item->getPath());
 

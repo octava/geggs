@@ -4,6 +4,8 @@ namespace Octava\GeggsBundle\Command;
 use Monolog\Processor\MemoryPeakUsageProcessor;
 use Octava\GeggsBundle\Helper\RepositoryFactory;
 use Octava\GeggsBundle\Plugin\BranchPlugin;
+use Octava\GeggsBundle\Plugin\CommitProjectPlugin;
+use Octava\GeggsBundle\Plugin\CommitVendorPlugin;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -41,9 +43,15 @@ class CommitCommand extends ContainerAwareCommand
         $branchPlugin = new BranchPlugin($config, $io, $logger);
         $branchPlugin->execute($list);
 
-        /** @var RepositoryModel $projectRepository */
-        /** @var RepositoryModel[] $vendors */
-        list($projectRepository, $vendors) = $this->getRepositories($repositories);
+        $commitVendorPlugin = new CommitVendorPlugin($config, $io, $logger);
+        $comment = $commitVendorPlugin->execute($list);
+
+        // composer plugin
+
+        // commit project plugin
+        $commitProjectPlugin = new CommitProjectPlugin($config, $io, $logger);
+        $commitProjectPlugin->setComment($comment);
+        $commitProjectPlugin->execute($list);
 
         $logger->debug('Finish', ['command_name' => $this->getName()]);
     }

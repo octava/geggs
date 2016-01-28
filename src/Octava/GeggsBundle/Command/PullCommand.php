@@ -28,7 +28,7 @@ class PullCommand extends ContainerAwareCommand
         $factory = new RepositoryFactory($this->getContainer()->get('octava_geggs.config'));
         $list = $factory->buildRepositoryModelList();
 
-        foreach ($list as $item) {
+        foreach ($list->getAll() as $item) {
             $io->section($item->getPackageName());
             $io->note($item->getPath());
 

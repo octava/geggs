@@ -29,7 +29,7 @@ class TestCommand extends ContainerAwareCommand
 
         $rows = [];
         $dump = [];
-        foreach ($list as $item) {
+        foreach ($list->getAll() as $item) {
             $dump = $item->dump();
             $rows[] = array_values($dump);
         }

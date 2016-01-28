@@ -1,6 +1,7 @@
 <?php
 namespace Octava\GeggsBundle\Plugin;
 
+use Octava\GeggsBundle\Helper\RepositoryList;
 use Octava\GeggsBundle\Model\RepositoryModel;
 
 /**
@@ -10,7 +11,7 @@ use Octava\GeggsBundle\Model\RepositoryModel;
 class BranchPlugin extends AbstractPlugin
 {
     /**
-     * @param RepositoryModel[] $repositories
+     *  @param RepositoryList $repositories
      * @description
      * проверить измененные файлы в директории
      * если есть измененные - проверяем название ветки
@@ -18,13 +19,10 @@ class BranchPlugin extends AbstractPlugin
      * собираем вендоры для которых нужно создать ветки
      * если ветки есть - запрашиваем подстверждение
      */
-    public function execute(array $repositories)
+    public function execute(RepositoryList $repositories)
     {
-        /** @var RepositoryModel $rootRepository */
-        /** @var RepositoryModel[] $vendors */
-        list($rootRepository, $vendors) = $this->getRepositories($repositories);
-        $branch = $rootRepository->getBranch();
-        $vendorsWithoutBranch = $this->findVendorsWithoutBranch($vendors, $branch);
+        $branch = $repositories->getProjectModel()->getBranch();
+        $vendorsWithoutBranch = $this->findVendorsWithoutBranch($repositories->getVendorModels(), $branch);
         $this->createBranches($branch, $vendorsWithoutBranch);
     }
 

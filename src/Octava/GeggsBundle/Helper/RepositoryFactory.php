@@ -32,7 +32,7 @@ class RepositoryFactory
     }
 
     /**
-     * @return RepositoryModel[]
+     * @return RepositoryList
      */
     public function buildRepositoryModelList()
     {
@@ -40,15 +40,16 @@ class RepositoryFactory
 
         $provider = new GitProvider($this->config, $path);
         $provider->setLogger($this->getLogger());
-        $model = new RepositoryModel(RepositoryModel::TYPE_ROOT, $path, $path, $provider);
-        $result[] = $model;
+        $projectModel = new RepositoryModel(RepositoryModel::TYPE_ROOT, $path, $path, $provider);
 
+        $vendors = [];
         foreach ($this->config->getVendorDirs() as $path) {
             $provider = new GitProvider($this->config, $path);
             $provider->setLogger($this->getLogger());
             $model = new RepositoryModel(RepositoryModel::TYPE_VENDOR, $this->config->getMainDir(), $path, $provider);
-            $result[] = $model;
+            $vendors[] = $model;
         }
+        $result = new RepositoryList($projectModel, $vendors);
 
         return $result;
     }
