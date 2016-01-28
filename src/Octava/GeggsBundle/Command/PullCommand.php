@@ -17,7 +17,7 @@ class PullCommand extends ContainerAwareCommand
     {
         $this
             ->setName('pull')
-            ->setDescription('Pull command');
+            ->setDescription('Fetch from and integrate with another repository or a local branch');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

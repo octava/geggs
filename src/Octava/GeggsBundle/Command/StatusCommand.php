@@ -22,7 +22,7 @@ class StatusCommand extends AbstractGitCommandHelper
     {
         $this
             ->setName('status')
-            ->setDescription('Git status');
+            ->setDescription('Show the working tree status');
     }
 
     /**
