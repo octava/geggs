@@ -59,7 +59,12 @@ class StatusCommand extends AbstractGitCommandHelper
                         );
                     } else {
                         $io->writeln(
-                            sprintf('<info>%s</info> <error>[%s]</error>', $item->getPath(), $item->getBranch())
+                            sprintf(
+                                '<info>%s</info> <error>[%s -> %s]</error>',
+                                $item->getPath(),
+                                $item->getBranch(),
+                                $projectBranch
+                            )
                         );
                     }
                 }
