@@ -48,13 +48,12 @@ class CommitCommand extends ContainerAwareCommand
         $branchPlugin->execute($list);
 
         $commitVendorPlugin = new CommitVendorPlugin($config, $io, $logger);
-        $comment = $commitVendorPlugin->execute($list);
+        $commitVendorPlugin->execute($list);
 
         $composerPlugin = new ComposerPlugin($config, $io, $logger);
         $composerPlugin->execute($list);
 
         $commitProjectPlugin = new CommitProjectPlugin($config, $io, $logger);
-        $commitProjectPlugin->setComment($comment);
         $commitProjectPlugin->execute($list);
 
         $logger->debug('Finish', ['command_name' => $this->getName()]);

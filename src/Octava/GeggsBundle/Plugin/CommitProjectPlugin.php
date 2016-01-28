@@ -9,27 +9,6 @@ use Octava\GeggsBundle\Helper\RepositoryList;
  */
 class CommitProjectPlugin extends AbstractPlugin
 {
-    protected $comment;
-
-    /**
-     * @return string
-     */
-    public function getComment()
-    {
-        return $this->comment;
-    }
-
-    /**
-     * @param string $comment
-     * @return self
-     */
-    public function setComment($comment)
-    {
-        $this->comment = $comment;
-
-        return $this;
-    }
-
     /**
      * @param RepositoryList $repositories
      * @return string
@@ -44,9 +23,8 @@ class CommitProjectPlugin extends AbstractPlugin
                     null,
                     function ($answer) {
                         $answer = trim($answer);
-
                         if (empty($answer)) {
-                            throw new \RuntimeException('Specify comment, please');
+                            throw new \RuntimeException('Empty comment');
                         }
 
                         return $answer;

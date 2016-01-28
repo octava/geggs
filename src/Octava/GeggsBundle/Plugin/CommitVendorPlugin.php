@@ -23,9 +23,8 @@ class CommitVendorPlugin extends AbstractPlugin
                     null,
                     function ($answer) {
                         $answer = trim($answer);
-
                         if (empty($answer)) {
-                            throw new \RuntimeException('Specify comment, please');
+                            throw new \RuntimeException('Empty comment');
                         }
 
                         return $answer;
@@ -44,7 +43,5 @@ class CommitVendorPlugin extends AbstractPlugin
                 $model->getProvider()->run('commit', ['-am', $comment], $this->isDryRun());
             }
         }
-
-        return $comment;
     }
 }
