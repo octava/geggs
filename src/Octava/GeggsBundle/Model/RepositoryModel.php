@@ -36,9 +36,9 @@ class RepositoryModel
 
     /**
      * RepositoryModel constructor.
-     * @param string $type
-     * @param string $rootPath
-     * @param string $path
+     * @param string           $type
+     * @param string           $rootPath
+     * @param string           $path
      * @param AbstractProvider $provider
      */
     public function __construct($type, $rootPath, $path, AbstractProvider $provider)
@@ -62,7 +62,14 @@ class RepositoryModel
      */
     public function __toString()
     {
-        return (string)$this->getPath();
+        $result = [];
+        $result[] = (string) $this->getPath();
+        $branch = $this->getBranch();
+        if ($branch) {
+            $result[] = ' ('.$branch.')';
+        }
+
+        return implode('', $result);
     }
 
     /**
@@ -80,7 +87,7 @@ class RepositoryModel
      */
     public function getRawStatus()
     {
-
+        return $this->getProvider()->run('status', ['--porcelain']);
     }
 
     /**
@@ -153,7 +160,7 @@ class RepositoryModel
      */
     public function hasChanges()
     {
-        $raw = $this->getProvider()->run('status', ['--porcelain']);
+        $raw = $this->getRawStatus();
 
         return !empty($raw);
     }

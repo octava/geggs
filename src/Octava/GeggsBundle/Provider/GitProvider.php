@@ -4,6 +4,10 @@ namespace Octava\GeggsBundle\Provider;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
+/**
+ * Class GitProvider
+ * @package Octava\GeggsBundle\Provider
+ */
 class GitProvider extends AbstractProvider
 {
     /**
@@ -12,6 +16,7 @@ class GitProvider extends AbstractProvider
      */
     public function runCommand($cmd)
     {
+        $process = null;
         try {
             $process = parent::runCommand($cmd);
         } catch (ProcessFailedException $e) {

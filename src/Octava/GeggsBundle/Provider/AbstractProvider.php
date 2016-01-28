@@ -2,11 +2,18 @@
 namespace Octava\GeggsBundle\Provider;
 
 use Octava\GeggsBundle\Config;
+use Octava\GeggsBundle\Helper\LoggerTrait;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
+/**
+ * Class AbstractProvider
+ * @package Octava\GeggsBundle\Provider
+ */
 abstract class AbstractProvider
 {
+    use LoggerTrait;
+
     /**
      * @var Config
      */
@@ -37,7 +44,7 @@ abstract class AbstractProvider
 
     /**
      * @param string $command
-     * @param array $arguments
+     * @param array  $arguments
      * @return string
      */
     public function run($command, array $arguments = [])
@@ -51,7 +58,7 @@ abstract class AbstractProvider
 
     /**
      * @param string $command
-     * @param array $arguments
+     * @param array  $arguments
      * @return string
      */
     public function buildCommand($command, array $arguments = [])
@@ -73,6 +80,8 @@ abstract class AbstractProvider
      */
     public function runCommand($cmd)
     {
+        $this->getLogger()->debug($cmd);
+
         $process = new Process($cmd);
 //        $process->setTty(true);
         $process->mustRun();

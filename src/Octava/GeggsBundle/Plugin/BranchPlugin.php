@@ -1,9 +1,7 @@
 <?php
 namespace Octava\GeggsBundle\Plugin;
 
-use Octava\GeggsBundle\Config;
 use Octava\GeggsBundle\Model\RepositoryModel;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class BranchPlugin
@@ -11,26 +9,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class BranchPlugin extends AbstractPlugin
 {
-    /**
-     * @var Config
-     */
-    protected $config;
-    /**
-     * @var SymfonyStyle
-     */
-    protected $io;
-
-    /**
-     * ComposerPlugin constructor.
-     * @param Config $config
-     * @param SymfonyStyle $io
-     */
-    public function __construct(Config $config, SymfonyStyle $io)
-    {
-        $this->config = $config;
-        $this->io = $io;
-    }
-
     /**
      * @param RepositoryModel[] $repositories
      * @description
@@ -47,33 +25,12 @@ class BranchPlugin extends AbstractPlugin
         list($rootRepository, $vendors) = $this->getRepositories($repositories);
         $branch = $rootRepository->getBranch();
         $vendorsWithoutBranch = $this->findVendorsWithoutBranch($vendors, $branch);
-        $this->createBranches($vendorsWithoutBranch);
-    }
-
-    /**
-     * @param RepositoryModel[] $repositories
-     * @return array
-     */
-    protected function getRepositories(array $repositories)
-    {
-        /** @var RepositoryModel $rootRepository */
-        $rootRepository = null;
-        /** @var RepositoryModel[] $vendors */
-        $vendors = [];
-        foreach ($repositories as $repository) {
-            if ($repository->getType() === RepositoryModel::TYPE_VENDOR) {
-                $vendors[] = $repository;
-            } else {
-                $rootRepository = $repository;
-            }
-        }
-
-        return [$rootRepository, $vendors];
+        $this->createBranches($branch, $vendorsWithoutBranch);
     }
 
     /**
      * @param RepositoryModel[] $vendors
-     * @param string $branch
+     * @param string            $branch
      * @return RepositoryModel[]
      */
     protected function findVendorsWithoutBranch(array $vendors, $branch)
@@ -90,24 +47,20 @@ class BranchPlugin extends AbstractPlugin
     }
 
     /**
-     * @param $vendorsWithoutBranch
+     * @param string            $rootBranch
+     * @param RepositoryModel[] $vendorsWithoutBranch
      */
-    protected function createBranches($vendorsWithoutBranch)
+    protected function createBranches($rootBranch, $vendorsWithoutBranch)
     {
         if ($vendorsWithoutBranch) {
-            $this->io->caution('There are vendors without branches:');
+            $this->io->caution('There are vendors with different branches:');
             $this->io->listing($vendorsWithoutBranch);
             if (!$this->io->confirm('Create branches?')) {
                 $this->stopPropagation();
             } else {
-                // --- dump ---
-                echo '<pre>';
-                echo __FILE__.chr(10);
-                echo __METHOD__.chr(10);
-                var_dump(123);
-                echo '</pre>';
-                exit(0);
-                // --- // ---
+                foreach ($vendorsWithoutBranch as $model) {
+                    $model->getProvider()->run('checkout', ['-b', $rootBranch]);
+                }
             }
         }
     }
