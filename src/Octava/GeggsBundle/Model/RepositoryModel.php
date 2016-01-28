@@ -113,10 +113,13 @@ class RepositoryModel
      */
     public function getPackageName()
     {
-        $parts = explode(DIRECTORY_SEPARATOR, $this->getAbsolutePath());
+        $result = null;
+        if ($this->getType() === self::TYPE_VENDOR) {
+            $parts = explode(DIRECTORY_SEPARATOR, $this->getAbsolutePath());
 
-        $result = array_slice($parts, count($parts) - 2);
-        $result = implode(DIRECTORY_SEPARATOR, $result);
+            $parts = array_slice($parts, count($parts) - 2);
+            $result = implode(DIRECTORY_SEPARATOR, $parts);
+        }
 
         return $result;
     }

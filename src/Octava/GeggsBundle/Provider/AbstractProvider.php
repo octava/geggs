@@ -45,12 +45,13 @@ abstract class AbstractProvider
     /**
      * @param string $command
      * @param array  $arguments
+     * @param bool   $isDryRun
      * @return string
      */
-    public function run($command, array $arguments = [])
+    public function run($command, array $arguments = [], $isDryRun = false)
     {
         $cmd = $this->buildCommand($command, $arguments);
-        $process = $this->runCommand($cmd);
+        $process = $this->runCommand($cmd, $isDryRun);
         $result = trim($process->getOutput());
 
         return $result;
@@ -76,15 +77,19 @@ abstract class AbstractProvider
 
     /**
      * @param string $cmd
-     * @return Process
+     * @param bool   $isDryRun
+     * @return Process|null
      */
-    public function runCommand($cmd)
+    public function runCommand($cmd, $isDryRun = false)
     {
         $this->getLogger()->debug($cmd);
 
-        $process = new Process($cmd);
-//        $process->setTty(true);
-        $process->mustRun();
+        $process = null;
+        if (!$isDryRun) {
+            $process = new Process($cmd);
+            //        $process->setTty(true);
+            $process->mustRun();
+        }
 
         return $process;
     }

@@ -2,7 +2,6 @@
 namespace Octava\GeggsBundle\Plugin;
 
 use Octava\GeggsBundle\Helper\RepositoryList;
-use Symfony\Component\Validator\Constraints\NotBlankValidator;
 
 /**
  * Class CommitVendorPlugin
@@ -16,15 +15,33 @@ class CommitVendorPlugin extends AbstractPlugin
      */
     public function execute(RepositoryList $repositories)
     {
-        $comment = trim($this->io->ask('Enter comment, please', null, new NotBlankValidator()));
+        $comment = $this->getInput()->getOption('message');
+        if (empty($comment)) {
+            $comment = trim(
+                $this->io->ask(
+                    'Enter comment, please',
+                    null,
+                    function ($answer) {
+                        $answer = trim($answer);
+
+                        if (empty($answer)) {
+                            throw new \RuntimeException('Specify comment, please');
+                        }
+
+                        return $answer;
+                    }
+                )
+            );
+        }
         $branch = $repositories->getProjectModel()->getBranch();
         if (false === strpos($comment, $branch)) {
             $comment = $branch.': '.$comment;
         }
+        $this->getInput()->setOption('message', $comment);
 
         foreach ($repositories->getVendorModels() as $model) {
             if ($model->hasChanges()) {
-                $model->getProvider()->run('commit', ['-am', $comment]);
+                $model->getProvider()->run('commit', ['-am', $comment], $this->isDryRun());
             }
         }
 

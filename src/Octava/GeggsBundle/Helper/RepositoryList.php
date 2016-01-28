@@ -12,7 +12,7 @@ class RepositoryList
     /**
      * @var RepositoryModel[]
      */
-    protected $vendorModels;
+    protected $vendorModels = [];
     /**
      * @var RepositoryModel
      */
@@ -50,6 +50,9 @@ class RepositoryList
      */
     public function getAll()
     {
-        return [$this->projectModel] + $this->vendorModels;
+        $result = $this->vendorModels;
+        array_unshift($result, $this->projectModel);
+
+        return $result;
     }
 }

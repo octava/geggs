@@ -12,9 +12,10 @@ class GitProvider extends AbstractProvider
 {
     /**
      * @param string $cmd
-     * @return Process
+     * @param bool   $isDryRun
+     * @return Process|null
      */
-    public function runCommand($cmd)
+    public function runCommand($cmd, $isDryRun = false)
     {
         $process = null;
         try {

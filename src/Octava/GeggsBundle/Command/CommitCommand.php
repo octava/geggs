@@ -26,7 +26,8 @@ class CommitCommand extends ContainerAwareCommand
         $this
             ->setName('commit')
             ->setDescription('Commit command')
-            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'try operation but make no changes');
+            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'try operation but make no changes')
+            ->addOption('message', 'm', InputOption::VALUE_REQUIRED, 'Use the given <message> as the commit message');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
