@@ -2,9 +2,9 @@
 namespace Octava\GeggsBundle\Command;
 
 use Monolog\Processor\MemoryPeakUsageProcessor;
-use Octava\GeggsBundle\Git\Status;
 use Octava\GeggsBundle\Helper\AbstractGitCommandHelper;
 use Octava\GeggsBundle\Helper\RepositoryFactory;
+use Octava\GeggsBundle\Model\RepositoryModel;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,7 +26,7 @@ class StatusCommand extends AbstractGitCommandHelper
     }
 
     /**
-     * @param InputInterface         $input
+     * @param InputInterface $input
      * @param OutputInterface|Output $output
      * @return void
      */
@@ -37,18 +37,39 @@ class StatusCommand extends AbstractGitCommandHelper
         $logger->pushProcessor(new MemoryPeakUsageProcessor());
 
         $io = new SymfonyStyle($input, $output);
-        $io->title($this->getDescription());
-
+        $io->writeln('');
         $config = $this->getContainer()->get('octava_geggs.config');
 
         $factory = new RepositoryFactory($config, $logger);
         $list = $factory->buildRepositoryModelList();
 
+        $hasChanges = false;
+        $projectBranch = $list->getProjectModel()->getBranch();
         foreach ($list->getAll() as $item) {
-            $io->section($item->getPackageName());
-            $io->note($item->getPath());
-
-            $io->writeln($item->getRawStatus());
+            $status = $item->getRawStatus();
+            if (!empty($status)) {
+                if ($item->getType() === RepositoryModel::TYPE_ROOT) {
+                    $io->writeln(
+                        sprintf('<info>project repository</info> <question>[%s]</question>', $item->getBranch())
+                    );
+                } else {
+                    if ($projectBranch === $item->getBranch()) {
+                        $io->writeln(
+                            sprintf('<info>%s</info> <question>[%s]</question>', $item->getPath(), $item->getBranch())
+                        );
+                    } else {
+                        $io->writeln(
+                            sprintf('<info>%s</info> <error>[%s]</error>', $item->getPath(), $item->getBranch())
+                        );
+                    }
+                }
+                $io->writeln($status);
+                $io->writeln('');
+                $hasChanges = true;
+            }
+        }
+        if (!$hasChanges) {
+            $io->writeln('<comment>nothing to commit</comment>');
         }
     }
 }
