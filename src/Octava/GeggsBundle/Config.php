@@ -62,7 +62,7 @@ class Config
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getGeneratorRepositoryUrl()
     {
@@ -70,7 +70,7 @@ class Config
     }
 
     /**
-     * @return null
+     * @return array
      */
     public function getVendorDirs()
     {
@@ -84,8 +84,8 @@ class Config
     /**
      * Tries to make a path relative to the project, which prints nicer.
      *
-     * @param $absolutePath
-     * @return mixed
+     * @param string $absolutePath
+     * @return string
      */
     public function makePathRelative($absolutePath)
     {
@@ -102,6 +102,7 @@ class Config
             if (!$fileSystem->exists($dir)) {
                 throw new \RuntimeException('Directory "%s" does not exists', $dir);
             }
+
             $finder = new Finder();
             $finder
                 ->ignoreVCS(false)
@@ -109,6 +110,7 @@ class Config
                 ->directories()
                 ->in($dir)
                 ->name('.git');
+
             /** @var \Symfony\Component\Finder\SplFileInfo $file */
             foreach ($finder as $file) {
                 $this->vendorDirs[] = $file->getPath();

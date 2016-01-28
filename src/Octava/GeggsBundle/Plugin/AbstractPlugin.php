@@ -6,6 +6,7 @@ use Octava\GeggsBundle\Helper\LoggerTrait;
 use Octava\GeggsBundle\Helper\RepositoryList;
 use Octava\GeggsBundle\Model\RepositoryModel;
 use Symfony\Bridge\Monolog\Logger;
+use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
@@ -65,6 +66,30 @@ abstract class AbstractPlugin
     public function isPropagationStopped()
     {
         return $this->isPropagationStopped;
+    }
+
+    /**
+     * @return Input
+     */
+    public function getInput()
+    {
+        $reflection = new \ReflectionClass($this->io);
+        $property = $reflection->getProperty('input');
+        $property->setAccessible(true);
+
+        $result = $property->getValue($this->io);
+
+        $property->setAccessible(false);
+
+        return $result;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDryRun()
+    {
+        return $this->getInput()->hasOption('dry-run') && !$this->getInput()->getOption('dry-run');
     }
 
     /**

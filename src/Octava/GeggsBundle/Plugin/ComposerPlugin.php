@@ -16,40 +16,22 @@ class ComposerPlugin extends AbstractPlugin
     public function execute(RepositoryList $repositories)
     {
         $composerFilename = $repositories->getProjectModel()->getAbsolutePath().DIRECTORY_SEPARATOR.'composer.json';
-        $data = json_decode(file_get_contents($composerFilename), true);
-
-        // --- dump ---
-        echo '<pre>';
-        echo __FILE__.chr(10);
-        echo __METHOD__.chr(10);
-        var_dump($data);
-        echo '</pre>';
-        // --- // ---
-
-        $composerData = $this->loadComposerJsonData();
+        $composerData = json_decode(file_get_contents($composerFilename), true);
 
         foreach ($repositories->getVendorModels() as $model) {
-//            $this->modifyRequire($dir, $composerData);
-//            $this->modifyrepositories($dir, $composerData);
+            if ($model->hasChanges()) {
+                $packageName = $model->getPackageName();
+                $version = 'dev-'.$model->getBranch();
+
+                $composerData['require'][$packageName] = $version;
+
+                $this->getLogger()->debug('Change vendor version', ['vendor' => $packageName, 'version' => $version]);
+            }
         }
 
-        $this->modifyComposerJson($composerData);
-    }
-
-    protected function loadComposerJsonData()
-    {
-        return [];
-    }
-
-    protected function modifyComposerJson($composerData)
-    {
-    }
-
-    protected function modifyrepositories($dir, $composerData)
-    {
-    }
-
-    protected function modifyRequire($dir, $composerData)
-    {
+        if (!$this->isDryRun()) {
+            file_put_contents($composerFilename, json_encode($composerData, JSON_PRETTY_PRINT));
+        }
+        $this->io->success('File composer.json updated');
     }
 }

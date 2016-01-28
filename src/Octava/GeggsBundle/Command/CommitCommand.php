@@ -6,10 +6,12 @@ use Octava\GeggsBundle\Helper\RepositoryFactory;
 use Octava\GeggsBundle\Plugin\BranchPlugin;
 use Octava\GeggsBundle\Plugin\CommitProjectPlugin;
 use Octava\GeggsBundle\Plugin\CommitVendorPlugin;
+use Octava\GeggsBundle\Plugin\ComposerPlugin;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -23,7 +25,8 @@ class CommitCommand extends ContainerAwareCommand
     {
         $this
             ->setName('commit')
-            ->setDescription('Commit command');
+            ->setDescription('Commit command')
+            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'try operation but make no changes');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -46,9 +49,9 @@ class CommitCommand extends ContainerAwareCommand
         $commitVendorPlugin = new CommitVendorPlugin($config, $io, $logger);
         $comment = $commitVendorPlugin->execute($list);
 
-        // composer plugin
+        $composerPlugin = new ComposerPlugin($config, $io, $logger);
+        $composerPlugin->execute($list);
 
-        // commit project plugin
         $commitProjectPlugin = new CommitProjectPlugin($config, $io, $logger);
         $commitProjectPlugin->setComment($comment);
         $commitProjectPlugin->execute($list);

@@ -113,7 +113,12 @@ class RepositoryModel
      */
     public function getPackageName()
     {
+        $parts = explode(DIRECTORY_SEPARATOR, $this->getAbsolutePath());
 
+        $result = array_slice($parts, count($parts) - 2);
+        $result = implode(DIRECTORY_SEPARATOR, $result);
+
+        return $result;
     }
 
     /**

@@ -8,6 +8,7 @@ use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -21,7 +22,8 @@ class TestCommand extends ContainerAwareCommand
     {
         $this
             ->setName('test')
-            ->setDescription('Test command');
+            ->setDescription('Test command')
+            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'try operation but make no changes');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
