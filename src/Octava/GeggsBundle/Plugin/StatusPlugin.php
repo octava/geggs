@@ -32,11 +32,10 @@ class StatusPlugin extends AbstractPlugin
                 $this->io->write(sprintf('<info>%s</info> ', $path));
 
                 if ($projectBranch === $branch) {
-                    $branch = sprintf('<error>[%s -> %s]</error>', $branch, $projectBranch);
+                    $this->io->write(sprintf('<error>[%s -> %s]</error>', $branch, $projectBranch));
                 } else {
-                    $branch = sprintf('<question>[%s]</question>', $branch);
+                    $this->io->write(sprintf('<question>[%s]</question>', $branch));
                 }
-                $this->io->write($branch);
 
                 if ($hasCommits) {
                     $this->io->write(' <comment>(has unpushed commits)</comment>');
