@@ -2,6 +2,7 @@
 namespace Octava;
 
 use Octava\GeggsBundle\Command\CommitCommand;
+use Octava\GeggsBundle\Command\PushCommand;
 use Octava\GeggsBundle\Command\StatusCommand;
 use Octava\GeggsBundle\Command\TestCommand;
 use Octava\GeggsBundle\DependencyInjection\OctavaGeggsExtension;
@@ -70,6 +71,7 @@ class GeggsApplication extends Application
 
         $commands[] = new StatusCommand();
         $commands[] = new CommitCommand();
+        $commands[] = new PushCommand();
         $commands[] = new TestCommand();
 
         foreach ($commands as $command) {

@@ -172,4 +172,15 @@ class RepositoryModel
 
         return !empty($raw);
     }
+
+    /**
+     * @return bool
+     */
+    public function hasCommits()
+    {
+        $branch = $this->getBranch();
+        $output = $this->getProvider()->run('log', ['origin/'.$branch.'..'.$branch]);
+
+        return !empty($output);
+    }
 }

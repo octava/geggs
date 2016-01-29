@@ -26,7 +26,7 @@ class CommitCommand extends ContainerAwareCommand
         $this
             ->setName('commit')
             ->setDescription('Record changes to the repository')
-            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'try operation but make no changes')
+            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Try operation but make no changes')
             ->addOption('message', 'm', InputOption::VALUE_REQUIRED, 'Use the given <message> as the commit message');
     }
 
