@@ -17,34 +17,35 @@ class StatusPlugin extends AbstractPlugin
     {
         $hasChanges = false;
         $projectBranch = $repositories->getProjectModel()->getBranch();
-        foreach ($repositories->getAll() as $item) {
-            $status = $item->getRawStatus();
-            if (!empty($status)) {
-                $branch = $item->getBranch();
-                if ($item->getType() === RepositoryModel::TYPE_ROOT) {
-                    $this->io->writeln(
-                        sprintf('<info>project repository</info> <question>[%s]</question>', $branch)
-                    );
-                } else {
+        foreach ($repositories->getAll() as $model) {
+            $branch = $model->getBranch();
+            $status = $model->getRawStatus();
+            $hasCommits = $model->hasCommits();
+            $path = $model->getPath();
+            $modelHasChanges = !empty($status) || $hasCommits;
+            $hasChanges = $hasChanges || $modelHasChanges;
 
-                    if ($projectBranch === $branch) {
-                        $this->io->writeln(
-                            sprintf('<info>%s</info> <question>[%s]</question>', $item->getPath(), $branch)
-                        );
-                    } else {
-                        $this->io->writeln(
-                            sprintf(
-                                '<info>%s</info> <error>[%s -> %s]</error>',
-                                $item->getPath(),
-                                $branch,
-                                $projectBranch
-                            )
-                        );
-                    }
+            if ($modelHasChanges) {
+                if ($model->getType() === RepositoryModel::TYPE_ROOT) {
+                    $path = 'project repository';
                 }
-                $this->io->writeln($status);
+                $this->io->write(sprintf('<info>%s</info> ', $path));
+
+                if ($projectBranch === $branch) {
+                    $branch = sprintf('<error>[%s -> %s]</error>', $branch, $projectBranch);
+                } else {
+                    $branch = sprintf('<question>[%s]</question>', $branch);
+                }
+                $this->io->write($branch);
+
+                if ($hasCommits) {
+                    $this->io->write(' <comment>(has unpushed commits)</comment>');
+                }
                 $this->io->writeln('');
-                $hasChanges = true;
+            }
+
+            if ($modelHasChanges) {
+                $this->io->writeln('');
             }
         }
         if (!$hasChanges) {
