@@ -31,7 +31,7 @@ class StatusPlugin extends AbstractPlugin
                 }
                 $this->io->write(sprintf('<info>%s</info> ', $path));
 
-                if ($projectBranch === $branch) {
+                if ($projectBranch !== $branch) {
                     $this->io->write(sprintf('<error>[%s -> %s]</error>', $branch, $projectBranch));
                 } else {
                     $this->io->write(sprintf('<question>[%s]</question>', $branch));
