@@ -53,7 +53,11 @@ abstract class AbstractProvider
     {
         $cmd = $this->buildCommand($command, $arguments);
         $process = $this->runCommand($cmd, $isDryRun, $tty);
-        $result = trim($process->getOutput());
+
+        $result = '';
+        if ($process instanceof Process) {
+            $result = trim($process->getOutput());
+        }
 
         return $result;
     }
