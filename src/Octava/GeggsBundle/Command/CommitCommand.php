@@ -1,25 +1,19 @@
 <?php
 namespace Octava\GeggsBundle\Command;
 
-use Monolog\Processor\MemoryPeakUsageProcessor;
-use Octava\GeggsBundle\Helper\RepositoryFactory;
 use Octava\GeggsBundle\Plugin\BranchPlugin;
 use Octava\GeggsBundle\Plugin\CommitProjectPlugin;
 use Octava\GeggsBundle\Plugin\CommitVendorPlugin;
 use Octava\GeggsBundle\Plugin\ComposerPlugin;
-use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
-use Symfony\Bridge\Monolog\Logger;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class CommitCommand
  * @package Octava\GeggsBundle\Command
  */
-class CommitCommand extends ContainerAwareCommand
+class CommitCommand extends AbstractCommand
 {
     protected function configure()
     {
@@ -32,29 +26,26 @@ class CommitCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $logger = new Logger($this->getName());
-        $logger->pushHandler(new ConsoleHandler($output));
-        $logger->pushProcessor(new MemoryPeakUsageProcessor());
-        $logger->debug('Start', ['command_name' => $this->getName()]);
+        $this->getLogger()->debug('Start', ['command_name' => $this->getName()]);
 
-        $io = new SymfonyStyle($input, $output);
+        $list = $this->getRepositoryModelList();
 
-        $config = $this->getContainer()->get('octava_geggs.config');
-        $factory = new RepositoryFactory($config, $logger);
-        $list = $factory->buildRepositoryModelList();
-
-        $branchPlugin = new BranchPlugin($config, $io, $logger);
+        $branchPlugin = new BranchPlugin($this->getConfig(), $this->getSymfonyStyle(), $this->getLogger());
         $branchPlugin->execute($list);
 
-        $commitVendorPlugin = new CommitVendorPlugin($config, $io, $logger);
+        $commitVendorPlugin = new CommitVendorPlugin($this->getConfig(), $this->getSymfonyStyle(), $this->getLogger());
         $commitVendorPlugin->execute($list);
 
-        $composerPlugin = new ComposerPlugin($config, $io, $logger);
+        $composerPlugin = new ComposerPlugin($this->getConfig(), $this->getSymfonyStyle(), $this->getLogger());
         $composerPlugin->execute($list);
 
-        $commitProjectPlugin = new CommitProjectPlugin($config, $io, $logger);
+        $commitProjectPlugin = new CommitProjectPlugin(
+            $this->getConfig(),
+            $this->getSymfonyStyle(),
+            $this->getLogger()
+        );
         $commitProjectPlugin->execute($list);
 
-        $logger->debug('Finish', ['command_name' => $this->getName()]);
+        $this->getLogger()->debug('Finish', ['command_name' => $this->getName()]);
     }
 }
