@@ -18,17 +18,28 @@ class ComposerPlugin extends AbstractPlugin
         $composerFilename = $repositories->getProjectModel()->getAbsolutePath().DIRECTORY_SEPARATOR.'composer.json';
         $composerData = json_decode(file_get_contents($composerFilename), true);
 
+        $updateFlag = false;
         foreach ($repositories->getVendorModels() as $model) {
-            if ($model->hasChanges()) {
-                $packageName = $model->getPackageName();
-                $version = 'dev-'.$model->getBranch();
+            $packageName = $model->getPackageName();
+            $sourceVersion = $composerData['require'][$packageName];
+            $newVersion = 'dev-'.$model->getBranch();
+            if ($model->hasChanges() || $newVersion != $sourceVersion) {
+                $composerData['require'][$packageName] = $newVersion;
 
-                $composerData['require'][$packageName] = $version;
+                $this->getLogger()->debug(
+                    'Change vendor newVersion',
+                    [
+                        'vendor' => $packageName,
+                        'from_version' => $sourceVersion,
+                        'to_version' => $newVersion,
+                    ]
+                );
 
-                $this->getLogger()->debug('Change vendor version', ['vendor' => $packageName, 'version' => $version]);
+                $updateFlag = true;
+            } else {
+                $this->getLogger()->debug('No changes', ['vendor' => $packageName]);
             }
         }
-
 
         if (!$this->isDryRun()) {
             $jsonEncodedData = json_encode(
@@ -38,6 +49,8 @@ class ComposerPlugin extends AbstractPlugin
             file_put_contents($composerFilename, $jsonEncodedData);
         }
 
-        $this->io->success('File composer.json updated');
+        if ($updateFlag) {
+            $this->io->success('File composer.json updated');
+        }
     }
 }
