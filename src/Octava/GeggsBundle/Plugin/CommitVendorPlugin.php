@@ -42,6 +42,8 @@ class CommitVendorPlugin extends AbstractPlugin
             if ($model->hasChanges()) {
                 $model->getProvider()->run('add', ['.'], $this->isDryRun());
                 $model->getProvider()->run('commit', ['-m', $comment], $this->isDryRun());
+
+                $this->io->writeln(sprintf('%s: commit changes', $model->getPath()));
             } else {
                 $this->getLogger()->debug('Changes not found');
             }

@@ -99,4 +99,28 @@ abstract class AbstractProvider
 
         return $process;
     }
+
+    /**
+     * @param string $branch
+     * @return bool
+     */
+    public function hasLocalBranch($branch)
+    {
+        $output = $this->run('show-branch', ['--list']);
+        $result = false !== strpos($output, $branch.']');
+
+        return $result;
+    }
+
+    /**
+     * @param string $branch
+     * @return bool
+     */
+    public function hasRemoteBranch($branch)
+    {
+        $output = $this->run('show-branch', ['--list', '-r']);
+        $result = false !== strpos($output, $branch.']');
+
+        return $result;
+    }
 }
