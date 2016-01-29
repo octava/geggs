@@ -46,12 +46,13 @@ abstract class AbstractProvider
      * @param string $command
      * @param array  $arguments
      * @param bool   $isDryRun
+     * @param bool   $tty
      * @return string
      */
-    public function run($command, array $arguments = [], $isDryRun = false)
+    public function run($command, array $arguments = [], $isDryRun = false, $tty = false)
     {
         $cmd = $this->buildCommand($command, $arguments);
-        $process = $this->runCommand($cmd, $isDryRun);
+        $process = $this->runCommand($cmd, $isDryRun, $tty);
         $result = trim($process->getOutput());
 
         return $result;
@@ -78,16 +79,17 @@ abstract class AbstractProvider
     /**
      * @param string $cmd
      * @param bool   $isDryRun
-     * @return Process|null
+     * @param bool   $tty
+     * @return null|Process
      */
-    public function runCommand($cmd, $isDryRun = false)
+    public function runCommand($cmd, $isDryRun = false, $tty = false)
     {
         $this->getLogger()->debug($cmd);
 
         $process = null;
         if (!$isDryRun) {
             $process = new Process($cmd);
-            //        $process->setTty(true);
+            $process->setTty($tty);
             $process->mustRun();
         }
 
