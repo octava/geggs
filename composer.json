@@ -6,7 +6,9 @@
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
-            "": "src/"
+            "": "src/",
+            "Plugin\\": [".geggs/plugins", "../../../.geggs/plugins"],
+            "Command\\": [".geggs/commands", "../../../.geggs/commands"]
         },
         "classmap": [
             "app/GeggsApplication.php"

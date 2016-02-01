@@ -1,11 +1,6 @@
 <?php
 namespace Octava;
 
-use Octava\GeggsBundle\Command\CheckoutCommand;
-use Octava\GeggsBundle\Command\CommitCommand;
-use Octava\GeggsBundle\Command\PullCommand;
-use Octava\GeggsBundle\Command\PushCommand;
-use Octava\GeggsBundle\Command\StatusCommand;
 use Octava\GeggsBundle\DependencyInjection\OctavaGeggsExtension;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application;
@@ -15,6 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Class GeggsApplication
@@ -41,6 +37,68 @@ class GeggsApplication extends Application
     public function __construct()
     {
         parent::__construct(self::APP_NAME, trim(file_get_contents(dirname(__DIR__).'/version')));
+
+        $this->registerCommands($this->getBundleDir().DIRECTORY_SEPARATOR.'Command');
+        //$this->registerCommands(__CLASS__.'/../src/Command');
+    }
+
+    /**
+     * @return string
+     */
+    public function getRootDir()
+    {
+        return dirname(__DIR__);
+    }
+
+    /**
+     * @return string
+     */
+    public function getBundleDir()
+    {
+        return $this->getRootDir().'/src/Octava/GeggsBundle/';
+    }
+
+    protected function registerCommands($dir)
+    {
+        if (!is_dir($dir)) {
+            return;
+        }
+
+        if (!class_exists('Symfony\Component\Finder\Finder')) {
+            throw new \RuntimeException('You need the symfony/finder component to register bundle commands.');
+        }
+
+        $finder = new Finder();
+        $finder->files()->name('*Command.php')->in($dir);
+
+        $prefix = $this->getNamespace().'\\Command';
+        foreach ($finder as $file) {
+            /** @var \Symfony\Component\Finder\SplFileInfo $file */
+            $ns = $prefix;
+            if ($relativePath = $file->getRelativePath()) {
+                $ns .= '\\'.str_replace('/', '\\', $relativePath);
+            }
+            $class = $ns.'\\'.$file->getBasename('.php');
+            if ($this->container) {
+                $alias = 'console.command.'.strtolower(str_replace('\\', '_', $class));
+                if ($this->container->has($alias)) {
+                    continue;
+                }
+            }
+            $r = new \ReflectionClass($class);
+            if ($r->isSubclassOf('Octava\\GeggsBundle\\Command\\AbstractCommand')
+                && !$r->isAbstract()
+                && !$r->getConstructor()->getNumberOfRequiredParameters()
+            ) {
+                /** @var \Octava\GeggsBundle\Command\AbstractCommand $command */
+                $command = $r->newInstance();
+                if ($command instanceof ContainerAwareInterface) {
+                    $command->setContainer($this->getContainer());
+                }
+
+                $this->add($command);
+            }
+        }
     }
 
     /**
@@ -63,44 +121,14 @@ class GeggsApplication extends Application
     }
 
     /**
-     * {@inheritdoc}
-     */
-    protected function getDefaultCommands()
-    {
-        $container = $this->getContainer();
-        $commands = parent::getDefaultCommands();
-
-        $commands[] = new StatusCommand();
-        $commands[] = new CommitCommand();
-        $commands[] = new PushCommand();
-        $commands[] = new PullCommand();
-        $commands[] = new CheckoutCommand();
-
-        foreach ($commands as $command) {
-            if ($command instanceof ContainerAwareInterface) {
-                $command->setContainer($container);
-            }
-        }
-
-        return $commands;
-    }
-
-    /**
      * @return string
      */
     protected function getConfigDefaultPath()
     {
         if (!$this->configDefaultPath) {
-            $composerFile = 'composer.json';
-            if (file_exists($composerFile)) {
-                $composer = json_decode(file_get_contents($composerFile), true);
-                if (isset($composer['extra']['geggs']['config-default-path'])) {
-                    $this->configDefaultPath = $composer['extra']['geggs']['config-default-path'];
-                }
-            }
-
             if (!file_exists($this->configDefaultPath)) {
-                $this->configDefaultPath = getcwd().DIRECTORY_SEPARATOR.self::APP_CONFIG_FILE;
+                $this->configDefaultPath =
+                    getcwd().DIRECTORY_SEPARATOR.'.geggs'.DIRECTORY_SEPARATOR.self::APP_CONFIG_FILE;
 
                 if (!file_exists($this->configDefaultPath)) {
                     $this->configDefaultPath = GEGGS_PATH.DIRECTORY_SEPARATOR.self::APP_CONFIG_FILE;
@@ -141,5 +169,10 @@ class GeggsApplication extends Application
         $this->container->compile();
 
         return $this->container;
+    }
+
+    private function getNamespace()
+    {
+        return 'Octava\\GeggsBundle';
     }
 }
