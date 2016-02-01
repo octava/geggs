@@ -15,6 +15,7 @@ class CommitProjectPlugin extends AbstractPlugin
      */
     public function execute(RepositoryList $repositories)
     {
+        //добавить hasChanges()
         $comment = $this->getInput()->getOption('message');
         if (empty($comment)) {
             $comment = trim(
