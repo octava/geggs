@@ -7,8 +7,8 @@
     "autoload": {
         "psr-4": {
             "": "src/",
-            "Plugin\\": [".geggs/plugins", "../../../.geggs/plugins"],
-            "Command\\": [".geggs/commands", "../../../.geggs/commands"]
+            "Project\\Geggs\\Plugin\\": [".geggs/Plugin", "../../../.geggs/Plugin"],
+            "Project\\Geggs\\Command\\": [".geggs/Command", "../../../.geggs/Command"]
         },
         "classmap": [
             "app/GeggsApplication.php"

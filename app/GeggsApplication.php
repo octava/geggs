@@ -38,8 +38,8 @@ class GeggsApplication extends Application
     {
         parent::__construct(self::APP_NAME, trim(file_get_contents(dirname(__DIR__).'/version')));
 
-        $this->registerCommands($this->getBundleDir().DIRECTORY_SEPARATOR.'Command');
-        //$this->registerCommands(__CLASS__.'/../src/Command');
+        $this->registerCommands($this->getBundleDir().DIRECTORY_SEPARATOR.'Command', $this->getNamespace());
+        $this->registerCommands(getcwd().DIRECTORY_SEPARATOR.'.geggs'.DIRECTORY_SEPARATOR.'Command', 'Project\\Geggs');
     }
 
     /**
@@ -55,10 +55,37 @@ class GeggsApplication extends Application
      */
     public function getBundleDir()
     {
-        return $this->getRootDir().'/src/Octava/GeggsBundle/';
+        return implode(
+            DIRECTORY_SEPARATOR,
+            [
+                $this->getRootDir(),
+                'src',
+                'Octava',
+                'GeggsBundle',
+            ]
+        );
     }
 
-    protected function registerCommands($dir)
+    /**
+     * @return string
+     */
+    public function getConfigDefaultPath()
+    {
+        if (!$this->configDefaultPath) {
+            if (!file_exists($this->configDefaultPath)) {
+                $this->configDefaultPath =
+                    getcwd().DIRECTORY_SEPARATOR.'.geggs'.DIRECTORY_SEPARATOR.self::APP_CONFIG_FILE;
+
+                if (!file_exists($this->configDefaultPath)) {
+                    $this->configDefaultPath = GEGGS_PATH.DIRECTORY_SEPARATOR.self::APP_CONFIG_FILE;
+                }
+            }
+        }
+
+        return $this->configDefaultPath;
+    }
+
+    protected function registerCommands($dir, $namespace)
     {
         if (!is_dir($dir)) {
             return;
@@ -71,7 +98,7 @@ class GeggsApplication extends Application
         $finder = new Finder();
         $finder->files()->name('*Command.php')->in($dir);
 
-        $prefix = $this->getNamespace().'\\Command';
+        $prefix = $namespace.'\\Command';
         foreach ($finder as $file) {
             /** @var \Symfony\Component\Finder\SplFileInfo $file */
             $ns = $prefix;
@@ -118,25 +145,6 @@ class GeggsApplication extends Application
         );
 
         return $definition;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getConfigDefaultPath()
-    {
-        if (!$this->configDefaultPath) {
-            if (!file_exists($this->configDefaultPath)) {
-                $this->configDefaultPath =
-                    getcwd().DIRECTORY_SEPARATOR.'.geggs'.DIRECTORY_SEPARATOR.self::APP_CONFIG_FILE;
-
-                if (!file_exists($this->configDefaultPath)) {
-                    $this->configDefaultPath = GEGGS_PATH.DIRECTORY_SEPARATOR.self::APP_CONFIG_FILE;
-                }
-            }
-        }
-
-        return $this->configDefaultPath;
     }
 
     /**

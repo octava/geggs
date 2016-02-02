@@ -44,25 +44,14 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-            ->arrayNode('plugins')
-            ->children()
-            ->arrayNode('pull')
-            ->prototype('scalar')->end()
-            ->end()
-            ->arrayNode('add')
-            ->prototype('scalar')->end()
-            ->end()
-            ->arrayNode('commit')
-            ->prototype('scalar')->end()
-            ->end()
-            ->arrayNode('status')
-            ->prototype('scalar')->end()
-            ->end()
-            ->arrayNode('push')
-            ->prototype('scalar')->end()
-            ->end()
-            ->end()
-            ->end()
+                ->arrayNode('commands')
+                    ->requiresAtLeastOneElement()
+                    ->isRequired()
+                    ->useAttributeAsKey('name')
+                    ->prototype('array')
+                            ->prototype('scalar')->end()
+                    ->end()
+                ->end()
             ->end();
 
         $rootNode

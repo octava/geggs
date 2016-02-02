@@ -1,6 +1,7 @@
 <?php
 namespace Octava\GeggsBundle;
 
+use Octava\GeggsBundle\Plugin\AbstractPlugin;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
@@ -19,7 +20,7 @@ class Config
 
     protected $vendorDirs = null;
 
-    protected $plugins = [];
+    protected $commands = [];
 
     protected $generator = [];
 
@@ -35,6 +36,7 @@ class Config
         $this->bin = $config['bin'];
         $this->mainDir = realpath($config['dir']['main']);
         $this->generator = $config['generator'];
+        $this->commands = $config['commands'];
     }
 
     /**
@@ -90,6 +92,21 @@ class Config
     public function makePathRelative($absolutePath)
     {
         return str_replace($this->getMainDir().'/', '', realpath($absolutePath) ?: $absolutePath);
+    }
+
+    /**
+     * Return plugins from config
+     * @param string $commandName
+     * @return AbstractPlugin[]
+     */
+    public function getPlugins($commandName)
+    {
+        $result = [];
+        if (array_key_exists($commandName, $this->commands)) {
+            $result = $this->commands[$commandName];
+        }
+
+        return $result;
     }
 
     private function initVendorDirs(array $dirs)
