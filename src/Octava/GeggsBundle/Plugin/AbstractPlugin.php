@@ -20,15 +20,15 @@ abstract class AbstractPlugin
     /**
      * @var bool
      */
-    protected $isPropagationStopped = false;
+    private $isPropagationStopped = false;
     /**
      * @var Config
      */
-    protected $config;
+    private $config;
     /**
      * @var SymfonyStyle
      */
-    protected $io;
+    private $symfonyStyle;
 
     /**
      * ComposerPlugin constructor.
@@ -39,8 +39,24 @@ abstract class AbstractPlugin
     public function __construct(Config $config, SymfonyStyle $io, Logger $logger)
     {
         $this->config = $config;
-        $this->io = $io;
+        $this->symfonyStyle = $io;
         $this->setLogger($logger);
+    }
+
+    /**
+     * @return Config
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+    /**
+     * @return SymfonyStyle
+     */
+    public function getSymfonyStyle()
+    {
+        return $this->symfonyStyle;
     }
 
     /**
@@ -73,11 +89,11 @@ abstract class AbstractPlugin
      */
     public function getInput()
     {
-        $reflection = new \ReflectionClass($this->io);
+        $reflection = new \ReflectionClass($this->symfonyStyle);
         $property = $reflection->getProperty('input');
         $property->setAccessible(true);
 
-        $result = $property->getValue($this->io);
+        $result = $property->getValue($this->symfonyStyle);
 
         $property->setAccessible(false);
 

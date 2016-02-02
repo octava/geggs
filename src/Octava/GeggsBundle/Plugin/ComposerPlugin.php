@@ -50,7 +50,7 @@ class ComposerPlugin extends AbstractPlugin
         }
 
         if ($updateFlag) {
-            $this->io->success('File composer.json updated');
+            $this->getSymfonyStyle()->success('File composer.json updated');
         }
     }
 }

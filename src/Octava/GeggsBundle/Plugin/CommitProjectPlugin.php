@@ -19,7 +19,7 @@ class CommitProjectPlugin extends AbstractPlugin
         $comment = $this->getInput()->getOption('message');
         if (empty($comment)) {
             $comment = trim(
-                $this->io->ask(
+                $this->getSymfonyStyle()->ask(
                     'Enter comment, please',
                     null,
                     function ($answer) {

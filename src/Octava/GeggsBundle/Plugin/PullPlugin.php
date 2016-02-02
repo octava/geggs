@@ -21,14 +21,14 @@ class PullPlugin extends AbstractPlugin
         foreach ($list as $model) {
             $currentBranch = $model->getBranch();
 
-            $this->io->writeln(sprintf('%s pulled from %s', $model->getPath(), $currentBranch));
+            $this->getSymfonyStyle()->writeln(sprintf('%s pulled from %s', $model->getPath(), $currentBranch));
 
             $output = $model->getProvider()->run('pull', ['origin', $currentBranch], $this->isDryRun(), true);
-            $this->io->writeln($output);
+            $this->getSymfonyStyle()->writeln($output);
 
             if (!empty($remoteBranch) && $remoteBranch != $currentBranch) {
                 $output = $model->getProvider()->run('pull', ['origin', $remoteBranch], $this->isDryRun(), true);
-                $this->io->writeln($output);
+                $this->getSymfonyStyle()->writeln($output);
             }
         }
     }

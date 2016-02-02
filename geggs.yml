@@ -20,5 +20,3 @@ octava_geggs:
             - Octava\GeggsBundle\Plugin\PullPlugin
         push:
             - Octava\GeggsBundle\Plugin\PushPlugin
-    generator:
-        repository_url: git@github.com

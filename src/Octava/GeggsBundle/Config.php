@@ -35,7 +35,6 @@ class Config
         $this->config = $config;
         $this->bin = $config['bin'];
         $this->mainDir = realpath($config['dir']['main']);
-        $this->generator = $config['generator'];
         $this->commands = $config['commands'];
     }
 
@@ -117,7 +116,7 @@ class Config
         foreach ($dirs as $dir) {
             $dir = $fileSystem->isAbsolutePath($dir) ?: $this->getMainDir().DIRECTORY_SEPARATOR.$dir;
             if (!$fileSystem->exists($dir)) {
-                throw new \RuntimeException('Directory "%s" does not exists', $dir);
+                throw new \RuntimeException(sprintf('Directory "%s" does not exists', $dir));
             }
 
             $finder = new Finder();

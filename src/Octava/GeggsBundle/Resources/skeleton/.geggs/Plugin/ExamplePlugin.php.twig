@@ -2,19 +2,27 @@
 namespace Project\Geggs\Plugin;
 
 use Octava\GeggsBundle\Helper\RepositoryList;
+use Octava\GeggsBundle\Model\RepositoryModel;
 use Octava\GeggsBundle\Plugin\AbstractPlugin;
 
 /**
  * Class StatusPlugin
  * @package Octava\GeggsBundle\Plugin
  */
-class ExampleStatusPlugin extends AbstractPlugin
+class ExamplePlugin extends AbstractPlugin
 {
     /**
      * @param RepositoryList $repositories
      */
     public function execute(RepositoryList $repositories)
     {
+        foreach ($repositories->getAll() as $model) {
+            $path = $model->getPath();
+            if ($model->getType() === RepositoryModel::TYPE_ROOT) {
+                $path = '.';
+            }
 
+            $this->getSymfonyStyle()->writeln(sprintf('<info>%s</info> [%s]', $path, $model->getBranch()));
+        }
     }
 }

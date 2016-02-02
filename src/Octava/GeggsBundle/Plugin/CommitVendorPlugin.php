@@ -18,7 +18,7 @@ class CommitVendorPlugin extends AbstractPlugin
         $comment = $this->getInput()->getOption('message');
         if (empty($comment)) {
             $comment = trim(
-                $this->io->ask(
+                $this->getSymfonyStyle()->ask(
                     'Enter comment, please',
                     null,
                     function ($answer) {
@@ -43,7 +43,7 @@ class CommitVendorPlugin extends AbstractPlugin
                 $model->getProvider()->run('add', ['.'], $this->isDryRun());
                 $model->getProvider()->run('commit', ['-m', $comment], $this->isDryRun());
 
-                $this->io->writeln(sprintf('%s: commit changes', $model->getPath()));
+                $this->getSymfonyStyle()->writeln(sprintf('%s: commit changes', $model->getPath()));
             } else {
                 $this->getLogger()->debug('Changes not found');
             }

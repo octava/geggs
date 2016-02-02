@@ -29,20 +29,20 @@ class CheckoutPlugin extends AbstractPlugin
             $needCheckout = $needCheckout || $model->hasChanges();
 
             if ($model->hasCommits()) {
-                $this->io->warning('Вы делаете checkout с закоммиченными но не запушенными правками');
+                $this->getSymfonyStyle()->warning('Вы делаете checkout с закоммиченными но не запушенными правками');
             }
 
             if ($needCheckout) {
-                $this->io->writeln(sprintf('%s pulled from %s', $model->getPath(), $currentBranch));
+                $this->getSymfonyStyle()->writeln(sprintf('%s pulled from %s', $model->getPath(), $currentBranch));
 
                 $output = $model->getProvider()->run('pull', ['origin', $currentBranch], $this->isDryRun(), true);
                 if ($output) {
-                    $this->io->writeln($output);
+                    $this->getSymfonyStyle()->writeln($output);
                 }
 
                 $output = $model->getProvider()->run('fetch', [], $this->isDryRun());
                 if ($output) {
-                    $this->io->writeln($output);
+                    $this->getSymfonyStyle()->writeln($output);
                 }
 
                 $arguments = [];
@@ -54,7 +54,7 @@ class CheckoutPlugin extends AbstractPlugin
                 $arguments[] = $branch;
                 $model->getProvider()->run('checkout', $arguments, $this->isDryRun());
 
-                $this->io->writeln(sprintf('%s: switched to branch', $model->getPath(), $branch));
+                $this->getSymfonyStyle()->writeln(sprintf('%s: switched to branch', $model->getPath(), $branch));
             }
         }
     }

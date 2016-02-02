@@ -51,9 +51,9 @@ class BranchPlugin extends AbstractPlugin
     protected function createBranches($rootBranch, $vendorsWithoutBranch)
     {
         if ($vendorsWithoutBranch) {
-            $this->io->caution('There are vendors with different branches:');
-            $this->io->listing($vendorsWithoutBranch);
-            if (!$this->io->confirm('Create branches?')) {
+            $this->getSymfonyStyle()->caution('There are vendors with different branches:');
+            $this->getSymfonyStyle()->listing($vendorsWithoutBranch);
+            if (!$this->getSymfonyStyle()->confirm('Create branches?')) {
                 $this->stopPropagation();
             } else {
                 foreach ($vendorsWithoutBranch as $model) {

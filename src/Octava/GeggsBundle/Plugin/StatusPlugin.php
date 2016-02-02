@@ -29,26 +29,26 @@ class StatusPlugin extends AbstractPlugin
                 if ($model->getType() === RepositoryModel::TYPE_ROOT) {
                     $path = 'project repository';
                 }
-                $this->io->write(sprintf('<info>%s</info> ', $path));
+                $this->getSymfonyStyle()->write(sprintf('<info>%s</info> ', $path));
 
                 if ($projectBranch !== $branch) {
-                    $this->io->write(sprintf('<error>[%s -> %s]</error>', $branch, $projectBranch));
+                    $this->getSymfonyStyle()->write(sprintf('<error>[%s -> %s]</error>', $branch, $projectBranch));
                 } else {
-                    $this->io->write(sprintf('<question>[%s]</question>', $branch));
+                    $this->getSymfonyStyle()->write(sprintf('<question>[%s]</question>', $branch));
                 }
 
                 if ($hasCommits) {
-                    $this->io->write(' <comment>(has unpushed commits)</comment>');
+                    $this->getSymfonyStyle()->write(' <comment>(has unpushed commits)</comment>');
                 }
-                $this->io->writeln('');
+                $this->getSymfonyStyle()->writeln('');
             }
 
             if ($modelHasChanges) {
-                $this->io->writeln('');
+                $this->getSymfonyStyle()->writeln('');
             }
         }
         if (!$hasChanges) {
-            $this->io->writeln('<comment>nothing to commit</comment>');
+            $this->getSymfonyStyle()->writeln('<comment>nothing to commit</comment>');
         }
     }
 }
