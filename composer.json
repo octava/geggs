@@ -4,11 +4,18 @@
     "license": "MIT",
     "type": "project",
     "minimum-stability": "stable",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "": "src/",
-            "Project\\Geggs\\Plugin\\": [".geggs/Plugin", "../../../.geggs/Plugin"],
-            "Project\\Geggs\\Command\\": [".geggs/Command", "../../../.geggs/Command"]
+            "Project\\Geggs\\Plugin\\": [
+                ".geggs/Plugin",
+                "../../../.geggs/Plugin"
+            ],
+            "Project\\Geggs\\Command\\": [
+                ".geggs/Command",
+                "../../../.geggs/Command"
+            ]
         },
         "classmap": [
             "app/GeggsApplication.php"
@@ -16,30 +23,26 @@
     },
     "require": {
         "php": ">=5.5.9",
-
-        "symfony/framework-bundle": "^2.8|^3.0",
-        "symfony/twig-bundle": "^2.8|^3.0",
-        "symfony/validator": "^2.8|^3.0",
-
+        "symfony/framework-bundle": "~2.8|~3.0",
+        "symfony/twig-bundle": "~2.8|~3.0",
+        "symfony/validator": "~2.8|~3.0",
         "herrera-io/phar-update": "~2.0",
-        "kherge/amend": "^3.0",
-        "zeichen32/gitlabapibundle": "^2.1"
+        "kherge/amend": "^3.0"
     },
     "require-dev": {
-        "sensio/generator-bundle": "^2.8|^3.0",
-        "symfony/phpunit-bridge": "^2.8|^3.0",
-        "symfony/var-dumper": "^2.8|^3.0",
-
+        "sensio/generator-bundle": "~2.8|~3.0",
+        "symfony/var-dumper": "~2.8|~3.0",
         "phpro/grumphp": "^0.7.0",
         "sensio/distribution-bundle": "^5.0"
     },
     "scripts": {
         "post-install-cmd": [
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+            "@symfony"
         ],
         "post-update-cmd": [
+            "@symfony"
+        ],
+        "symfony": [
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
