@@ -71,14 +71,16 @@ class GeggsApplication extends Application
      */
     public function getConfigDefaultPath()
     {
-        if (!$this->configDefaultPath) {
-            if (!file_exists($this->configDefaultPath)) {
-                $this->configDefaultPath =
-                    getcwd().DIRECTORY_SEPARATOR.'.geggs'.DIRECTORY_SEPARATOR.self::APP_CONFIG_FILE;
+        if (empty($this->configDefaultPath) || !file_exists($this->configDefaultPath)) {
+            $this->configDefaultPath =
+                getcwd().DIRECTORY_SEPARATOR.'.geggs'.DIRECTORY_SEPARATOR.self::APP_CONFIG_FILE;
 
-                if (!file_exists($this->configDefaultPath)) {
-                    $this->configDefaultPath = GEGGS_PATH.DIRECTORY_SEPARATOR.self::APP_CONFIG_FILE;
-                }
+            if (!file_exists($this->configDefaultPath)) {
+                $this->configDefaultPath = GEGGS_PATH.DIRECTORY_SEPARATOR.self::APP_CONFIG_FILE;
+            }
+
+            if (!file_exists($this->configDefaultPath)) {
+                $this->configDefaultPath = dirname(__DIR__).DIRECTORY_SEPARATOR.self::APP_CONFIG_FILE;
             }
         }
 

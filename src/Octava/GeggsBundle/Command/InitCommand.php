@@ -3,8 +3,8 @@ namespace Octava\GeggsBundle\Command;
 
 use Octava\GeggsApplication;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -27,6 +27,7 @@ class InitCommand extends AbstractCommand
     {
         $this
             ->setName('init')
+            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Try operation but make no changes')
             ->setDescription('Init geggs environment');
     }
 
@@ -43,8 +44,6 @@ class InitCommand extends AbstractCommand
         if (file_exists($configDir)) {
             $this->getSymfonyStyle()->warning('Already exists .geggs directory.');
         } else {
-            $fileSystem = new Filesystem();
-
             /** @var GeggsApplication $application */
             $application = $this->getApplication();
             $source = implode(
@@ -53,11 +52,10 @@ class InitCommand extends AbstractCommand
                     $application->getBundleDir(),
                     'Resources',
                     'skeleton',
-                    '.geggs',
+                    'geggs',
                 ]
             );
             $this->skeletonDirs = [$source];
-            $target = $configDir;
 
             try {
                 $finder = new Finder();
@@ -67,7 +65,10 @@ class InitCommand extends AbstractCommand
 
                     $targetFilename = $configDir.DIRECTORY_SEPARATOR.$file->getRelativePathname();
                     $targetFilename = str_replace('.twig', '', $targetFilename);
-                    $this->renderFile($file->getRelativePathname(), $targetFilename, []);
+
+                    if (!$input->getOption('dry-run')) {
+                        $this->renderFile($file->getRelativePathname(), $targetFilename, []);
+                    }
 
                     $this->getLogger()->debug('Copy file', ['source' => $file->getPath(), 'target' => $targetFilename]);
                 }
