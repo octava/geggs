@@ -11,7 +11,7 @@ use Octava\GeggsBundle\Model\RepositoryModel;
 class BranchPlugin extends AbstractPlugin
 {
     /**
-     *  @param RepositoryList $repositories
+     * @param RepositoryList $repositories
      * @description
      * проверить измененные файлы в директории
      * если есть измененные - проверяем название ветки
@@ -54,7 +54,9 @@ class BranchPlugin extends AbstractPlugin
             $this->getSymfonyStyle()->caution('There are vendors with different branches:');
             $this->getSymfonyStyle()->listing($vendorsWithoutBranch);
             if (!$this->getSymfonyStyle()->confirm('Create branches?')) {
-                $this->stopPropagation();
+                if (!$this->getSymfonyStyle()->confirm('Would you like to continue <info>commit</info> procedure?')) {
+                    $this->stopPropagation();
+                };
             } else {
                 foreach ($vendorsWithoutBranch as $model) {
                     $model->getProvider()->run('checkout', ['-b', $rootBranch]);

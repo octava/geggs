@@ -44,6 +44,9 @@ class StatusPlugin extends AbstractPlugin
             }
 
             if ($modelHasChanges) {
+                if ($status) {
+                    $this->getSymfonyStyle()->write($status);
+                }
                 $this->getSymfonyStyle()->writeln('');
             }
         }

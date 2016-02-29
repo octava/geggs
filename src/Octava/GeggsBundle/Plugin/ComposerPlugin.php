@@ -21,6 +21,11 @@ class ComposerPlugin extends AbstractPlugin
         $updateFlag = false;
         foreach ($repositories->getVendorModels() as $model) {
             $packageName = $model->getPackageName();
+
+            if (empty($composerData['require'][$packageName])) {
+                continue;
+            }
+
             $sourceVersion = $composerData['require'][$packageName];
             $newVersion = 'dev-'.$model->getBranch();
             if ($model->hasChanges() || $newVersion != $sourceVersion) {

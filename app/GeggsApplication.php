@@ -102,6 +102,8 @@ class GeggsApplication extends Application
 
         $prefix = $namespace.'\\Command';
         foreach ($finder as $file) {
+            require_once $file;
+
             /** @var \Symfony\Component\Finder\SplFileInfo $file */
             $ns = $prefix;
             if ($relativePath = $file->getRelativePath()) {

@@ -6,7 +6,7 @@
         "LICENSE",
         "README.md",
         "geggs.yml",
-        "version",git stt
+        "version",
         "vendor/autoload.php",
         "vendor/herrera-io/phar-update/res/schema.json"
     ],
@@ -35,7 +35,7 @@
     ],
     "compression": "GZ",
     "main": "bin/geggs",
-    "output": "/Volumes/Storage/www/rbfx/forex_libs/geggs.phar",
+    "output": "geggs.phar",
     "stub": true,
     "chmod": "0755"
 }
