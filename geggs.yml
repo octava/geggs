@@ -4,7 +4,8 @@ octava_geggs:
         composer: composer
     dir:
         main: .
-        vendors: ~
+        vendors:
+            - vendor/tonicforhealth/parallel-process-runner
 
     commands:
         status:

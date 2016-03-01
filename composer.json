@@ -31,7 +31,8 @@
         "symfony/console": "~2.8|~3.0",
         "symfony/process": "~2.8|~3.0",
         "herrera-io/phar-update": "~2.0",
-        "kherge/amend": "^3.0"
+        "kherge/amend": "^3.0",
+        "tonicforhealth/parallel-process-runner": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.8|~3.0",
@@ -39,6 +40,12 @@
         "phpro/grumphp": "^0.7.0",
         "sensio/distribution-bundle": "^5.0"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/octava/parallel-process-runner.git"
+        }
+    ],
     "scripts": {
         "post-install-cmd": [
             "@symfony"
