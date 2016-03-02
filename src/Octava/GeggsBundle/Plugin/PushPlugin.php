@@ -18,7 +18,7 @@ class PushPlugin extends AbstractPlugin
         /** @var RepositoryModel[] $list */
         $list = array_reverse($repositories->getAll());
         foreach ($list as $model) {
-            if ($model->hasCommits()) {
+            if ($model->hasCommits() || !$model->hasRemote()) {
                 $branch = $model->getBranch();
 
                 $model->getProvider()->run('push', ['origin', $branch], $this->isDryRun());
