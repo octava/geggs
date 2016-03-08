@@ -27,9 +27,11 @@ class ComposerPlugin extends AbstractPlugin
             }
 
             $sourceVersion = $composerData['require'][$packageName];
+            $versionChanged = (false !== strpos($sourceVersion, 'as'));
             $newVersion = 'dev-'.$model->getBranch().' as '.$sourceVersion;
-            if ($model->hasChanges()
-                || 'master' != $model->getBranch()
+            if (!$versionChanged &&
+                ($model->hasChanges()
+                    || 'master' != $model->getBranch())
             ) {
                 $composerData['require'][$packageName] = $newVersion;
 
