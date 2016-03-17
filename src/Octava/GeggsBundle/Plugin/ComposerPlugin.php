@@ -35,7 +35,7 @@ class ComposerPlugin extends AbstractPlugin
             ) {
                 $composerData['require'][$packageName] = $newVersion;
 
-                $this->getLogger()->debug(
+                $this->getLogger()->info(
                     'Change vendor newVersion',
                     [
                         'vendor' => $packageName,
@@ -45,6 +45,21 @@ class ComposerPlugin extends AbstractPlugin
                 );
 
                 $updateFlag = true;
+            } elseif ('master' == $repositories->getProjectModel()->getBranch()
+                && $versionChanged
+            ) {
+                $ar = explode('as', $sourceVersion);
+                $newVersion = trim($ar[1]);
+                $composerData['require'][$packageName] = $newVersion;
+
+                $this->getLogger()->info(
+                    'Change vendor newVersion',
+                    [
+                        'vendor' => $packageName,
+                        'from_version' => $sourceVersion,
+                        'to_version' => $newVersion,
+                    ]
+                );
             } else {
                 $this->getLogger()->debug('No changes', ['vendor' => $packageName]);
             }
