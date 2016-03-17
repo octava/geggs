@@ -26,26 +26,22 @@ class PullPlugin extends AbstractPlugin
         foreach ($list as $model) {
             $currentBranch = $model->getBranch();
 
-//            $this->getSymfonyStyle()->writeln(
-//                sprintf(
-//                    '%s pulled from %s',
-//                    $model->getPath() ? $model->getPath() : 'main',
-//                    $currentBranch
-//                )
-//            );
-
             $parallelProcess->add(
                 $model->getProvider()->buildCommand('pull', ['origin', $currentBranch]),
                 $this->isDryRun(),
                 false
             );
-//            if (!empty($remoteBranch) && $remoteBranch != $currentBranch) {
-//                $parallelProcess->add(
-//                    $model->getProvider()->buildCommand('pull', ['origin', $remoteBranch]),
-//                    $this->isDryRun(),
-//                    false
-//                );
-//            }
+
+            if (!empty($remoteBranch) && $remoteBranch != $currentBranch
+                && ($model->getProvider()->hasLocalBranch($remoteBranch)
+                    || $model->getProvider()->hasLocalBranch($remoteBranch))
+            ) {
+                $parallelProcess->add(
+                    $model->getProvider()->buildCommand('pull', ['origin', $remoteBranch]),
+                    $this->isDryRun(),
+                    false
+                );
+            }
         }
 
         $parallelProcess->run();

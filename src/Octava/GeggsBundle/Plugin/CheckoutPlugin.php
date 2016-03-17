@@ -27,6 +27,7 @@ class CheckoutPlugin extends AbstractPlugin
 
             $needCheckout = $model->getType() == RepositoryModel::TYPE_ROOT;
             $needCheckout = $needCheckout || $model->hasChanges();
+            $needCheckout = $needCheckout || 'master' == $branch;
 
             if ($model->hasCommits()) {
                 $this->getSymfonyStyle()->warning('Вы делаете checkout с закоммиченными но не запушенными правками');
