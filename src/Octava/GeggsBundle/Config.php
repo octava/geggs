@@ -22,8 +22,6 @@ class Config
 
     protected $commands = [];
 
-    protected $generator = [];
-
     protected $config;
 
     /**
@@ -36,7 +34,6 @@ class Config
         $this->bin = $config['bin'];
         $this->mainDir = realpath($config['dir']['main']);
         $this->commands = $config['commands'];
-        $this->generator = $config['generator'];
     }
 
     /**
@@ -61,14 +58,6 @@ class Config
     public function getMainDir()
     {
         return $this->mainDir;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGeneratorRepositoryUrl()
-    {
-        return $this->generator['repository_url'];
     }
 
     /**

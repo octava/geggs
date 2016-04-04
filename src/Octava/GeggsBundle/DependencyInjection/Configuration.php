@@ -54,15 +54,6 @@ class Configuration implements ConfigurationInterface
                 ->end()
             ->end();
 
-        $rootNode
-            ->children()
-                ->arrayNode('generator')
-                    ->children()
-                        ->scalarNode('repository_url')->defaultValue(null)->end()
-                    ->end()
-                ->end()
-            ->end();
-
         return $treeBuilder;
     }
 }
