@@ -2,8 +2,7 @@
 namespace Octava\GeggsBundle\Command;
 
 use Octava\GeggsBundle\Generator\VendorGenerator;
-use Octava\GeggsBundle\Model\Vendor;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Octava\GeggsBundle\Model\VendorModel;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -15,7 +14,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * Class VendorCreateCommand
  * @package Octava\GeggsBundle\Command
  */
-class VendorCreateCommand extends ContainerAwareCommand
+class VendorCreateCommand extends AbstractCommand
 {
     protected function configure()
     {
@@ -28,7 +27,7 @@ class VendorCreateCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface         $input
      * @param OutputInterface|Output $output
      * @return void
      */
@@ -47,7 +46,7 @@ class VendorCreateCommand extends ContainerAwareCommand
         $config = $this->getContainer()->get('octava_geggs.config');
 
         $repositoryUrl = $input->getOption('url');
-        $vendor = new Vendor($dir, $name, $repositoryUrl);
+        $vendor = new VendorModel($dir, $name, $repositoryUrl);
         $relativeTargetDirectory = $config->makePathRelative($vendor->getTargetDirectory());
         $io->writeln(
             sprintf(
