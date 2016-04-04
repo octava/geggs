@@ -36,6 +36,7 @@ class Config
         $this->bin = $config['bin'];
         $this->mainDir = realpath($config['dir']['main']);
         $this->commands = $config['commands'];
+        $this->generator = $config['generator'];
     }
 
     /**

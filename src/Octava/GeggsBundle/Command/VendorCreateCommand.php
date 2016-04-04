@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Class VendorCreateCommand
@@ -33,12 +34,13 @@ class VendorCreateCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io = new SymfonyStyle($input, $output);
+        $this->getLogger()->debug('Start', ['command_name' => $this->getName()]);
+        $io = $this->getSymfonyStyle();
 
         $name = $input->getArgument('name');
 
         $dir = $input->getOption('dir');
-        $filesystem = $this->getContainer()->get('filesystem');
+        $filesystem = new Filesystem();
         if (!$filesystem->isAbsolutePath($dir)) {
             $dir = getcwd().'/'.$dir;
         }
@@ -68,6 +70,19 @@ class VendorCreateCommand extends AbstractCommand
                 sprintf('Or push manually `cd "%s" && git push`', $relativeTargetDirectory),
             ]
         );
+
+        $list = $this->getRepositoryModelList();
+        $plugins = $this->getPlugins();
+
+        foreach ($plugins as $plugin) {
+            $plugin->execute($list);
+
+            if ($plugin->isPropagationStopped()) {
+                break;
+            }
+        }
+
+        $this->getLogger()->debug('Finish', ['command_name' => $this->getName()]);
     }
 
     protected function interact(InputInterface $input, OutputInterface $output)
