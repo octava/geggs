@@ -18,7 +18,10 @@ class PullPlugin extends AbstractPlugin
     {
         $parallelProcess = new ParallelProcess($this->getSymfonyStyle());
 
-        $remoteBranch = $this->getInput()->getArgument('remote-branch');
+        $remoteBranch = null;
+        if ($this->getInput()->hasArgument('remote-branch')) {
+            $remoteBranch = $this->getInput()->getArgument('remote-branch');
+        }
         /** @var RepositoryModel[] $list */
         $list = array_reverse($repositories->getAll());
 

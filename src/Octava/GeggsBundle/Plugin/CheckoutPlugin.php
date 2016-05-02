@@ -30,7 +30,9 @@ class CheckoutPlugin extends AbstractPlugin
             $needCheckout = $needCheckout || 'master' == $branch;
 
             if ($model->hasCommits()) {
-                $this->getSymfonyStyle()->warning('Вы делаете checkout с закоммиченными но не запушенными правками');
+                $this->getSymfonyStyle()
+                    ->warning(sprintf('Вы делаете checkout "%s" с закоммиченными но не запушенными правками',
+                        $model->getPackageName()));
             }
 
             if ($needCheckout) {

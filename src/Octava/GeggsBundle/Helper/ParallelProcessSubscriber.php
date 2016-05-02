@@ -1,6 +1,9 @@
 <?php
 namespace Octava\GeggsBundle\Helper;
 
+use Symfony\Component\Console\Input\Input;
+use Symfony\Component\Console\Output\Output;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tonic\ParallelProcessRunner\Event\ParallelProcessRunnerEventType;
@@ -66,8 +69,10 @@ class ParallelProcessSubscriber implements EventSubscriberInterface
     {
         $process = $event->getProcess();
 
-        $this->getSymfonyStyle()->writeln($process->getCommandLine());
-        $this->getSymfonyStyle()->writeln(trim($process->getErrorOutput()));
-        $this->getSymfonyStyle()->writeln(trim($process->getOutput()));
+        if (OutputInterface::VERBOSITY_DEBUG <= $this->getSymfonyStyle()->getVerbosity()) {
+            $this->getSymfonyStyle()->writeln($process->getCommandLine());
+            $this->getSymfonyStyle()->writeln(trim($process->getErrorOutput()));
+            $this->getSymfonyStyle()->writeln(trim($process->getOutput()));
+        }
     }
 }
