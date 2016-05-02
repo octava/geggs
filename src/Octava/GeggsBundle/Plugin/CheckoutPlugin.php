@@ -57,7 +57,7 @@ class CheckoutPlugin extends AbstractPlugin
                 $arguments[] = $branch;
                 $model->getProvider()->run('checkout', $arguments, $this->isDryRun());
 
-                $this->getSymfonyStyle()->writeln(sprintf('%s: switched to branch', $model->getPath(), $branch));
+                $this->getSymfonyStyle()->writeln(sprintf('%s: switched to [%s]', $model->getPath(), $branch));
             }
         }
     }
