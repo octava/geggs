@@ -20,7 +20,7 @@ class GitProvider extends AbstractProvider
     {
         $process = null;
         try {
-            $process = parent::runCommand($cmd);
+            $process = parent::runCommand($cmd, $isDryRun, $tty);
         } catch (ProcessFailedException $e) {
             $message = $e->getMessage();
             if (false !== strpos($message, 'nothing to commit')) {
