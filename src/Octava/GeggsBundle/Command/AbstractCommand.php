@@ -52,6 +52,7 @@ class AbstractCommand extends ContainerAwareCommand
             $plugin->execute($list);
 
             if ($plugin->isPropagationStopped()) {
+                $this->getLogger()->notice('Plugin isPropagationStopped', ['plugin' => get_class($plugin)]);
                 break;
             }
         }

@@ -43,7 +43,9 @@ class CommitVendorPlugin extends AbstractPlugin
                 $model->getProvider()->run('add', ['.'], $this->isDryRun());
                 $model->getProvider()->run('commit', ['-m', $comment], $this->isDryRun());
 
-                $this->getSymfonyStyle()->writeln(sprintf('%s: commit changes', $model->getPath()));
+                $this->getSymfonyStyle()->writeln(
+                    sprintf('%s: commit changes to (%s)', $model->getPath(), $model->getBranch())
+                );
             } else {
                 $this->getLogger()->debug('Changes not found');
             }
