@@ -88,7 +88,7 @@ abstract class AbstractProvider
      */
     public function runCommand($cmd, $isDryRun = false, $tty = false)
     {
-        $this->getLogger()->debug($cmd);
+        $this->getLogger()->debug($cmd, ['dry_run' => $isDryRun, 'tty' => $tty]);
 
         $process = null;
         if (!$isDryRun) {
