@@ -2,6 +2,7 @@
 namespace Octava\GeggsBundle\Plugin;
 
 use Octava\GeggsBundle\Helper\RepositoryList;
+use Octava\GeggsBundle\Model\RepositoryModel;
 
 /**
  * Class ComposerPlugin
@@ -18,51 +19,36 @@ class ComposerPlugin extends AbstractPlugin
         $composerFilename = $repositories->getProjectModel()->getAbsolutePath().DIRECTORY_SEPARATOR.'composer.json';
         $composerData = json_decode(file_get_contents($composerFilename), true);
 
+        if (!$composerData) {
+            throw new \RuntimeException('Json decode error: '.json_last_error_msg());
+        }
+
+        $data = $repositories->getVendorModels();
+        $vendorsModels = [];
+        foreach ($data as $model) {
+            $vendorsModels[strtolower($model->getPackageName())] = $model;
+        }
+
+        $projectBranch = $repositories->getProjectModel()->getBranch();
         $updateFlag = false;
-        foreach ($repositories->getVendorModels() as $model) {
-            $packageName = $model->getPackageName();
+        if (!empty($composerData['require'])) {
+            $changes = $this->changeVersion(
+                $composerData['require'],
+                $vendorsModels,
+                $projectBranch
+            );
+            $composerData['require'] = array_merge($composerData['require'], $changes);
+            $updateFlag = $updateFlag || !empty($changes);
+        }
 
-            if (empty($composerData['require'][$packageName])) {
-                continue;
-            }
-
-            $sourceVersion = $composerData['require'][$packageName];
-            $versionChanged = (false !== strpos($sourceVersion, 'as'));
-            $newVersion = 'dev-'.$model->getBranch().' as '.$sourceVersion;
-            if (!$versionChanged &&
-                ($model->hasChanges()
-                    || 'master' != $model->getBranch())
-            ) {
-                $composerData['require'][$packageName] = $newVersion;
-
-                $this->getLogger()->info(
-                    'Change vendor newVersion',
-                    [
-                        'vendor' => $packageName,
-                        'from_version' => $sourceVersion,
-                        'to_version' => $newVersion,
-                    ]
-                );
-
-                $updateFlag = true;
-            } elseif ('master' == $repositories->getProjectModel()->getBranch()
-                && $versionChanged
-            ) {
-                $ar = explode('as', $sourceVersion);
-                $newVersion = trim($ar[1]);
-                $composerData['require'][$packageName] = $newVersion;
-
-                $this->getLogger()->info(
-                    'Change vendor newVersion',
-                    [
-                        'vendor' => $packageName,
-                        'from_version' => $sourceVersion,
-                        'to_version' => $newVersion,
-                    ]
-                );
-            } else {
-                $this->getLogger()->debug('No changes', ['vendor' => $packageName]);
-            }
+        if (!empty($composerData['require-dev'])) {
+            $changes = $this->changeVersion(
+                $composerData['require-dev'],
+                $vendorsModels,
+                $projectBranch
+            );
+            $composerData['require-dev'] = array_merge($composerData['require-dev'], $changes);
+            $updateFlag = $updateFlag || !empty($changes);
         }
 
         if (!$this->isDryRun()) {
@@ -76,5 +62,67 @@ class ComposerPlugin extends AbstractPlugin
         if ($updateFlag) {
             $this->getSymfonyStyle()->success('File composer.json updated');
         }
+    }
+
+    /**
+     * @param array             $composerData
+     * @param RepositoryModel[] $vendorsModels
+     * @param string            $projectBranch
+     * @return array
+     */
+    protected function changeVersion(array $composerData, array $vendorsModels, $projectBranch)
+    {
+        $result = [];
+        foreach ($composerData as $packageName => $version) {
+            $packageNameLower = strtolower($packageName);
+
+            $this->getLogger()->debug('Check vendor version', [$packageName]);
+
+            if (!array_key_exists($packageNameLower, $vendorsModels)) {
+                $this->getLogger()->debug('Skipped, because not found in vendor list');
+                continue;
+            }
+            $model = $vendorsModels[$packageNameLower];
+
+            $sourceVersion = $composerData[$packageName];
+            $versionChanged = (false !== strpos($sourceVersion, 'as'));
+            $newVersion = 'dev-'.$model->getBranch().' as '.$sourceVersion;
+
+            if (!$versionChanged &&
+                ($model->hasChanges()
+                    || 'master' != $model->getBranch())
+            ) {
+                $result[$packageName] = $newVersion;
+
+                $this->getLogger()->info(
+                    'Change version',
+                    [
+                        'vendor' => $packageName,
+                        'from' => $sourceVersion,
+                        'to' => $newVersion,
+                    ]
+                );
+            } elseif (
+                'master' == $projectBranch
+                && $versionChanged
+            ) {
+                $ar = explode('as', $sourceVersion);
+                $newVersion = trim($ar[1]);
+                $result[$packageName] = $newVersion;
+
+                $this->getLogger()->info(
+                    'Change version',
+                    [
+                        'vendor' => $packageName,
+                        'from' => $sourceVersion,
+                        'to' => $newVersion,
+                    ]
+                );
+            } else {
+                $this->getLogger()->debug('No changes', ['vendor' => $packageName]);
+            }
+        }
+
+        return $result;
     }
 }
