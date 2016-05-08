@@ -25,7 +25,11 @@
                 "phpunit",
                 "Tester",
                 "Tests",
-                "tests"
+                "tests",
+                "leaphub/phpcs-symfony2-standard",
+                "phpro/grumphp",
+                "sensio/distribution-bundle",
+                "squizlabs/php_codesniffer"
             ],
             "in": ""
         }

@@ -43,7 +43,14 @@ class AbstractCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->getLogger()->debug('Start', ['command_name' => $this->getName()]);
+        $this->getLogger()->debug(
+            'Start',
+            [
+                'command_name' => $this->getName(),
+                'args' => $input->getArguments(),
+                'opts' => $input->getOptions(),
+            ]
+        );
 
         $list = $this->getRepositoryModelList();
         $plugins = $this->getPlugins();

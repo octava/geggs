@@ -37,7 +37,7 @@ class PullPlugin extends AbstractPlugin
 
             if (!empty($remoteBranch) && $remoteBranch != $currentBranch
                 && ($model->getProvider()->hasLocalBranch($remoteBranch)
-                    || $model->getProvider()->hasLocalBranch($remoteBranch))
+                    || $model->getProvider()->hasRemoteBranch($remoteBranch))
             ) {
                 $parallelProcess->add(
                     $model->getProvider()->buildCommand('pull', ['origin', $remoteBranch]),
