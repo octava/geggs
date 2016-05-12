@@ -30,8 +30,7 @@ class PushPlugin extends AbstractPlugin
                     false
                 );
 
-//                $model->getProvider()->run('push', ['origin', $branch], $this->isDryRun());
-//                $this->getSymfonyStyle()->writeln(sprintf('%s pushed to %s', $model->getPath(), $branch));
+                $this->getSymfonyStyle()->writeln(sprintf('%s pushed to %s', $model->getPath(), $branch));
             } else {
                 $this->getLogger()->debug('Nothing to push', ['name' => $model->getPath()]);
             }
