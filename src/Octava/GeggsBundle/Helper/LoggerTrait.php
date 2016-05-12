@@ -2,7 +2,6 @@
 namespace Octava\GeggsBundle\Helper;
 
 use Monolog\Handler\NullHandler;
-use Octava\GeggsBundle\Model\RepositoryModel;
 use Symfony\Bridge\Monolog\Logger;
 
 /**
