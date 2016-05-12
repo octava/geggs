@@ -5,11 +5,13 @@ use Composer\Composer;
 use Composer\DependencyResolver\Operation\InstallOperation;
 use Composer\DependencyResolver\Operation\UninstallOperation;
 use Composer\DependencyResolver\Operation\UpdateOperation;
+use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\Installer;
 use Composer\Installer\PackageEvent;
 use Composer\Installer\PackageEvents;
 use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
+use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
 use GrumPHP\Console\Command\ConfigureCommand;
@@ -19,7 +21,7 @@ use GrumPHP\Locator\ExternalCommand;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\ProcessBuilder;
 
-class GrumPHPPlugin
+class GrumPHPPlugin implements PluginInterface, EventSubscriberInterface
 {
     const PACKAGE_NAME = 'octava/geggs';
 
