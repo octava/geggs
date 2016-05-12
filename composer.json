@@ -2,7 +2,7 @@
     "name": "octava/geggs",
     "description": "Git eggs",
     "license": "MIT",
-    "type": "project",
+    "type": "composer-plugin",
     "minimum-stability": "stable",
     "prefer-stable": true,
     "autoload": {
