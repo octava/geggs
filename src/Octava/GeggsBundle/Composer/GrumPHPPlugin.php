@@ -14,12 +14,15 @@ use Composer\Package\PackageInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
-use GrumPHP\Console\Command\ConfigureCommand;
 use GrumPHP\Console\Command\Git\DeInitCommand;
 use GrumPHP\Console\Command\Git\InitCommand;
-use GrumPHP\Locator\ExternalCommand;
+use Octava\GeggsBundle\Config;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\ProcessBuilder;
+use Symfony\Component\Yaml\Yaml;
 
 class GrumPHPPlugin implements PluginInterface, EventSubscriberInterface
 {
@@ -53,11 +56,11 @@ class GrumPHPPlugin implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            PackageEvents::POST_PACKAGE_INSTALL => 'postPackageInstall',
-            PackageEvents::POST_PACKAGE_UPDATE => 'postPackageUpdate',
-            PackageEvents::PRE_PACKAGE_UNINSTALL => 'prePackageUninstall',
-            ScriptEvents::POST_INSTALL_CMD => 'runScheduledTasks',
-            ScriptEvents::POST_UPDATE_CMD => 'runScheduledTasks',
+            PackageEvents::POST_PACKAGE_INSTALL => ['postPackageInstall', 100],
+            PackageEvents::POST_PACKAGE_UPDATE => ['postPackageUpdate', 100],
+            PackageEvents::PRE_PACKAGE_UNINSTALL => ['prePackageUninstall', 100],
+            ScriptEvents::POST_INSTALL_CMD => ['runScheduledTasks', 100],
+            ScriptEvents::POST_UPDATE_CMD => ['runScheduledTasks', 100],
         ];
     }
 
@@ -133,9 +136,7 @@ class GrumPHPPlugin implements PluginInterface, EventSubscriberInterface
      */
     public function runScheduledTasks(Event $event)
     {
-        if ($this->initScheduled) {
-            $this->runGrumPhpCommand(ConfigureCommand::COMMAND_NAME);
-        }
+        $this->initScheduled = true;
         if ($this->initScheduled) {
             $this->initGitHook();
         }
@@ -175,27 +176,120 @@ class GrumPHPPlugin implements PluginInterface, EventSubscriberInterface
     protected function runGrumPhpCommand($command)
     {
         $config = $this->composer->getConfig();
-        $commandLocator = new ExternalCommand($config->get('bin-dir'), new ExecutableFinder());
-        $executable = $commandLocator->locate('grumphp');
+        $baseDir = $this->getObjectProtectedProperty($config, 'baseDir');
 
-        $builder = new ProcessBuilder([$executable, $command, '--no-interaction']);
-        $process = $builder->getProcess();
+        $configFilename = !empty($config->get('extra')['grumphp']['config-default-path'])
+            ? $config->get('extra')['grumphp']['config-default-path'] : $baseDir.DIRECTORY_SEPARATOR.'grumphp.yml';
 
-        // Check executable which is running:
-        if ($this->io->isVeryVerbose()) {
-            $this->io->write('Running process : '.$process->getCommandLine());
-        }
-
-        $process->run();
-        if (!$process->isSuccessful()) {
-            $this->io->write(
-                '<fg=red>GrumPHP can not sniff your commits. Did you specify the correct git-dir?</fg=red>'
-            );
-            $this->io->write('<fg=red>'.$process->getErrorOutput().'</fg=red>');
+        if (!file_exists($configFilename)) {
+            // Check executable which is running:
+            if ($this->io->isVeryVerbose()) {
+                $this->io->write(sprintf('<fg=red>File "%s" not found</fg=red>', $configFilename));
+            }
 
             return;
         }
 
-        $this->io->write('<fg=yellow>'.$process->getOutput().'</fg=yellow>');
+        $application = new \Octava\GeggsApplication();
+        /** @var Config $config */
+        $config = $application->getContainer()->get('octava_geggs.config');
+
+        $grumPhpConfigData = Yaml::parse(file_get_contents($configFilename));
+        $fileSystem = new Filesystem();
+
+        foreach ($config->getVendorDirs() as $item) {
+            $grumPhpConfigData['bin_dir'] = '../../../bin';
+
+            $grumPhpConfigYml = Yaml::dump($grumPhpConfigData);
+
+            $vendorConfigFilename = implode(DIRECTORY_SEPARATOR, [$item, 'vendor', 'grumphp.yml']);
+            $fileSystem->dumpFile($vendorConfigFilename, $grumPhpConfigYml);
+
+            $gitPreCommitFilename = implode(DIRECTORY_SEPARATOR, [$item, '.git', 'hooks', 'pre-commit']);
+            $fileSystem->dumpFile(
+                $gitPreCommitFilename,
+                $this->generatePreCommit($vendorConfigFilename)
+            );
+
+            $gitCommitMsgFilename = implode(DIRECTORY_SEPARATOR, [$item, '.git', 'hooks', 'commit-msg']);
+            $fileSystem->dumpFile(
+                $gitCommitMsgFilename,
+                $this->generateCommitMsg($vendorConfigFilename)
+            );
+
+            if ($this->io->isVeryVerbose()) {
+                $this->io->write(sprintf('Config created %s', $vendorConfigFilename));
+                $this->io->write(sprintf('Pre commit hook created %s', $gitPreCommitFilename));
+                $this->io->write(sprintf('Commit msg hook created %s', $gitCommitMsgFilename));
+            }
+        }
+
+        $this->io->write('<fg=yellow>GrumPHP is sniffing your vendors code!</fg=yellow>');
+    }
+
+    protected function getObjectProtectedProperty($object, $propertyName)
+    {
+        $reflection = new \ReflectionClass($object);
+        $property = $reflection->getProperty($propertyName);
+        $property->setAccessible(true);
+        $result = $property->getValue($object);
+        $property->setAccessible(false);
+
+        return $result;
+    }
+
+    protected function generatePreCommit($path)
+    {
+        $result = <<<'SQL'
+#!/bin/sh
+
+#
+# Run the hook command.
+# Note: this will be replaced by the real command during copy.
+#
+(cd "./" && exec '../../../bin/grumphp' 'git:pre-commit' '--config={{path}}' '--skip-success-output')
+
+# Validate exit code of above command
+RC=$?
+if [ "$RC" != 0 ]; then
+    exit $RC;
+fi
+
+# Clean exit:
+exit 0;
+SQL;
+        $result = str_replace('{{path}}', $path, $result);
+
+        return $result;
+    }
+
+    private function generateCommitMsg($path)
+    {
+        $result = <<<'SQL'
+#!/bin/sh
+
+#
+# Run the hook command.
+# Note: this will be replaced by the real command during copy.
+#
+
+GIT_USER=$(git config user.name)
+GIT_EMAIL=$(git config user.email)
+COMMIT_MSG_FILE=$1
+
+(cd "./" && exec '../../../bin/grumphp' 'git:commit-msg' '--config={{path}}' "--git-user=$GIT_USER" "--git-email=$GIT_EMAIL" "$COMMIT_MSG_FILE")
+
+# Validate exit code of above command
+RC=$?
+if [ "$RC" != 0 ]; then
+    exit $RC;
+fi
+
+# Clean exit:
+exit 0;
+SQL;
+        $result = str_replace('{{path}}', $path, $result);
+
+        return $result;
     }
 }

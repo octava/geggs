@@ -25,10 +25,12 @@ class RepositoryFactory
      * @param Config $config
      * @param Logger $logger
      */
-    public function __construct(Config $config, Logger $logger)
+    public function __construct(Config $config, Logger $logger = null)
     {
         $this->config = $config;
-        $this->setLogger($logger);
+        if ($logger) {
+            $this->setLogger($logger);
+        }
     }
 
     /**

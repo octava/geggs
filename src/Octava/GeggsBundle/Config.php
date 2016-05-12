@@ -3,7 +3,6 @@ namespace Octava\GeggsBundle;
 
 use Octava\GeggsBundle\Plugin\AbstractPlugin;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 
 /**
  * Class Config
@@ -109,17 +108,9 @@ class Config
                 throw new \RuntimeException(sprintf('Directory "%s" does not exists', $dir));
             }
 
-            $finder = new Finder();
-            $finder
-                ->ignoreVCS(false)
-                ->ignoreDotFiles(false)
-                ->directories()
-                ->in($dir)
-                ->name('.git');
-
-            /** @var \Symfony\Component\Finder\SplFileInfo $file */
-            foreach ($finder as $file) {
-                $this->vendorDirs[] = $file->getPath();
+            $data = array_merge(glob($dir.'/*/.git', GLOB_ONLYDIR), glob($dir.'/.git', GLOB_ONLYDIR));
+            foreach ($data as $item) {
+                $this->vendorDirs[] = dirname($item);
             }
         }
     }

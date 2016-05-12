@@ -154,7 +154,7 @@ class GeggsApplication extends Application
     /**
      * @return ContainerBuilder
      */
-    protected function getContainer()
+    public function getContainer()
     {
         if ($this->container) {
             return $this->container;
