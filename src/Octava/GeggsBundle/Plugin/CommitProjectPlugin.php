@@ -37,7 +37,13 @@ class CommitProjectPlugin extends AbstractPlugin
         $model = $repositories->getProjectModel();
         if ($model->hasChanges()) {
             $model->getProvider()->run('add', ['.'], $this->isDryRun());
-            $model->getProvider()->run('commit', ['-m', $comment], $this->isDryRun());
+            $params = [];
+            if ($this->getInput()->hasOption('no-verify') && $this->getInput()->getOption('no-verify')) {
+                $params[] = '--no-verify';
+            }
+            $params[] = '-m';
+            $params[] = $comment;
+            $model->getProvider()->run('commit', $params, $this->isDryRun(), true);
         } else {
             $this->getLogger()->debug('Changes not found');
         }

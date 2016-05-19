@@ -41,7 +41,14 @@ class CommitVendorPlugin extends AbstractPlugin
         foreach ($repositories->getVendorModels() as $model) {
             if ($model->hasChanges()) {
                 $model->getProvider()->run('add', ['.'], $this->isDryRun());
-                $model->getProvider()->run('commit', ['-m', $comment], $this->isDryRun());
+
+                $params = [];
+                if ($this->getInput()->hasOption('no-verify') && $this->getInput()->getOption('no-verify')) {
+                    $params[] = '--no-verify';
+                }
+                $params[] = '-m';
+                $params[] = $comment;
+                $model->getProvider()->run('commit', $params, $this->isDryRun(), true);
 
                 $this->getSymfonyStyle()->writeln(
                     sprintf('%s: commit changes to (%s)', $model->getPath(), $model->getBranch())
