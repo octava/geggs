@@ -107,7 +107,7 @@ abstract class AbstractProvider
     public function hasLocalBranch($branch)
     {
         $output = $this->run('show-branch', ['--list']);
-        $branches = $this->extractBranches($output);
+        $branches = $this->extractLocalBranches($output);
         $result = in_array($branch, $branches);
 
         return $result;
@@ -120,7 +120,7 @@ abstract class AbstractProvider
     public function hasRemoteBranch($branch)
     {
         $output = $this->run('show-branch', ['--list', '-r']);
-        $branches = $this->extractBranches($output);
+        $branches = $this->extractRemoteBranches($output);
         $result = in_array($branch, $branches);
 
         return $result;
@@ -130,7 +130,21 @@ abstract class AbstractProvider
      * @param string $subject
      * @return array
      */
-    protected function extractBranches($subject)
+    protected function extractLocalBranches($subject)
+    {
+        $pattern = '/\[(.*)\] /i';
+        $matches = null;
+        preg_match_all($pattern, $subject, $matches);
+        $result = empty($matches[1]) ? [] : $matches[1];
+
+        return $result;
+    }
+
+    /**
+     * @param string $subject
+     * @return array
+     */
+    protected function extractRemoteBranches($subject)
     {
         $pattern = '/ \[origin\/(.*)\] /i';
         $matches = null;
