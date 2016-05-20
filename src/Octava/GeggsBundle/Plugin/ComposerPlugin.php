@@ -76,10 +76,10 @@ class ComposerPlugin extends AbstractPlugin
     protected function changeVersion(array $composerData, array $vendorsModels, $projectBranch)
     {
         $result = [];
-        foreach ($composerData as $packageName => $version) {
+        foreach ($composerData as $packageName => $sourceVersion) {
             $packageNameLower = strtolower($packageName);
 
-            $this->getLogger()->debug('Check vendor version', [$packageName]);
+            $this->getLogger()->debug('Check vendor version', [$packageName, $sourceVersion]);
 
             if (!array_key_exists($packageNameLower, $vendorsModels)) {
                 $this->getLogger()->debug('Skipped, because not found in vendor list',
@@ -88,8 +88,7 @@ class ComposerPlugin extends AbstractPlugin
             }
             $model = $vendorsModels[$packageNameLower];
 
-            $sourceVersion = $composerData[$packageName];
-            $versionChanged = (false !== strpos($sourceVersion, 'as'));
+            $versionChanged = (false !== strpos($sourceVersion, ' as '));
             $newVersion = 'dev-'.$model->getBranch().' as '.$sourceVersion;
 
             if (!$versionChanged &&
@@ -98,7 +97,7 @@ class ComposerPlugin extends AbstractPlugin
             ) {
                 $result[$packageName] = $newVersion;
 
-                $this->getLogger()->info(
+                $this->getLogger()->debug(
                     'Change version 1',
                     [
                         'vendor' => $packageName,
@@ -114,7 +113,7 @@ class ComposerPlugin extends AbstractPlugin
                 $newVersion = trim($ar[1]);
                 $result[$packageName] = $newVersion;
 
-                $this->getLogger()->info(
+                $this->getLogger()->debug(
                     'Change version 2',
                     [
                         'vendor' => $packageName,
