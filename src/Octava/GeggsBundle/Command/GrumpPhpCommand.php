@@ -110,10 +110,25 @@ class GrumpPhpCommand extends AbstractCommand
             $vendorPath = $model->getAbsolutePath();
             $gitPreCommitFilename = implode(DIRECTORY_SEPARATOR, [$vendorPath, '.git', 'hooks', 'pre-commit']);
             $gitCommitMsgFilename = implode(DIRECTORY_SEPARATOR, [$vendorPath, '.git', 'hooks', 'commit-msg']);
-            $vendorConfigFilename = implode(DIRECTORY_SEPARATOR, [$vendorPath, 'vendor', 'grumphp.yml']);
+            $vendorConfigFilename = implode(DIRECTORY_SEPARATOR, [$vendorPath, '.git', 'grumphp.yml']);
 
             if (self::ACTION_INIT == $action) {
                 $grumpConfigData['parameters']['bin_dir'] = '../../../bin';
+
+                if (!empty($grumpConfigData['parameters']['tasks']['phpcs']['standard'])) {
+                    $standard = $grumpConfigData['parameters']['tasks']['phpcs']['standard'];
+                    if (0 === strpos($standard, 'vendor/')
+                        || 0 === strpos($standard, './vendor/')
+                    ) {
+                        $grumpConfigData['parameters']['tasks']['phpcs']['standard'] = implode(
+                            DIRECTORY_SEPARATOR,
+                            [
+                                $repositories->getProjectModel()->getAbsolutePath(),
+                                $grumpConfigData['parameters']['tasks']['phpcs']['standard'],
+                            ]
+                        );
+                    }
+                }
 
                 if (!$optionDryRun) {
                     $grumpConfigYml = Yaml::dump($grumpConfigData);
