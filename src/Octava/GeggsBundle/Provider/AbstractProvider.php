@@ -2,6 +2,7 @@
 namespace Octava\GeggsBundle\Provider;
 
 use Octava\GeggsBundle\Config;
+use Octava\GeggsBundle\Helper\GitOutputHelper;
 use Octava\GeggsBundle\Helper\LoggerTrait;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
@@ -107,7 +108,7 @@ abstract class AbstractProvider
     public function hasLocalBranch($branch)
     {
         $output = $this->run('show-branch', ['--list']);
-        $branches = $this->extractLocalBranches($output);
+        $branches = GitOutputHelper::extractLocalBranches($output);
         $result = in_array($branch, $branches);
 
         return $result;
@@ -120,36 +121,8 @@ abstract class AbstractProvider
     public function hasRemoteBranch($branch)
     {
         $output = $this->run('show-branch', ['--list', '-r']);
-        $branches = $this->extractRemoteBranches($output);
+        $branches = GitOutputHelper::extractRemoteBranches($output);
         $result = in_array($branch, $branches);
-
-        return $result;
-    }
-
-    /**
-     * @param string $subject
-     * @return array
-     */
-    protected function extractLocalBranches($subject)
-    {
-        $pattern = '/\[(.*)\] /i';
-        $matches = null;
-        preg_match_all($pattern, $subject, $matches);
-        $result = empty($matches[1]) ? [] : $matches[1];
-
-        return $result;
-    }
-
-    /**
-     * @param string $subject
-     * @return array
-     */
-    protected function extractRemoteBranches($subject)
-    {
-        $pattern = '/ \[origin\/(.*)\] /i';
-        $matches = null;
-        preg_match_all($pattern, $subject, $matches);
-        $result = empty($matches[1]) ? [] : $matches[1];
 
         return $result;
     }
