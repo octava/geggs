@@ -15,6 +15,7 @@ class StatusPlugin extends AbstractPlugin
      */
     public function execute(RepositoryList $repositories)
     {
+        $this->getLogger()->debug('Run plugin', [get_called_class()]);
         $hasChanges = false;
         $projectBranch = $repositories->getProjectModel()->getBranch();
         foreach ($repositories->getAll() as $model) {
@@ -53,5 +54,7 @@ class StatusPlugin extends AbstractPlugin
         if (!$hasChanges) {
             $this->getSymfonyStyle()->writeln('<comment>nothing to commit</comment>');
         }
+
+        $this->getLogger()->debug('End plugin', [get_called_class()]);
     }
 }

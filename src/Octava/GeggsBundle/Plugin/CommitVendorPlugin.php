@@ -15,6 +15,7 @@ class CommitVendorPlugin extends AbstractPlugin
      */
     public function execute(RepositoryList $repositories)
     {
+        $this->getLogger()->debug('Run plugin', [get_called_class()]);
         $comment = $this->getInput()->getOption('message');
         if (empty($comment)) {
             $comment = trim(
@@ -54,8 +55,10 @@ class CommitVendorPlugin extends AbstractPlugin
                     sprintf('%s: commit changes to (%s)', $model->getPath(), $model->getBranch())
                 );
             } else {
-                $this->getLogger()->debug('Changes not found');
+                $this->getLogger()->debug('Changes not found', ['commit vendor']);
             }
         }
+
+        $this->getLogger()->debug('End plugin', [get_called_class()]);
     }
 }

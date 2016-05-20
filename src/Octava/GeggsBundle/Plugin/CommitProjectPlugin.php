@@ -15,7 +15,8 @@ class CommitProjectPlugin extends AbstractPlugin
      */
     public function execute(RepositoryList $repositories)
     {
-        //добавить hasChanges()
+        $this->getLogger()->debug('Run plugin', [get_called_class()]);
+
         $comment = $this->getInput()->getOption('message');
         if (empty($comment)) {
             $comment = trim(
@@ -45,7 +46,9 @@ class CommitProjectPlugin extends AbstractPlugin
             $params[] = $comment;
             $model->getProvider()->run('commit', $params, $this->isDryRun(), true);
         } else {
-            $this->getLogger()->debug('Changes not found');
+            $this->getLogger()->debug('Changes not found', ['commit']);
         }
+
+        $this->getLogger()->debug('End plugin', [get_called_class()]);
     }
 }

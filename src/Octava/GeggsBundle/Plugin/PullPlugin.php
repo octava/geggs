@@ -16,6 +16,7 @@ class PullPlugin extends AbstractPlugin
      */
     public function execute(RepositoryList $repositories)
     {
+        $this->getLogger()->debug('Run plugin', [get_called_class()]);
         $parallelProcess = new ParallelProcess($this->getSymfonyStyle());
 
         $remoteBranch = null;
@@ -49,5 +50,7 @@ class PullPlugin extends AbstractPlugin
         }
 
         $parallelProcess->run();
+
+        $this->getLogger()->debug('End plugin', [get_called_class()]);
     }
 }

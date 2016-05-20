@@ -16,6 +16,7 @@ class PushPlugin extends AbstractPlugin
      */
     public function execute(RepositoryList $repositories)
     {
+        $this->getLogger()->debug('Run plugin', [get_called_class()]);
         $parallelProcess = new ParallelProcess($this->getSymfonyStyle());
 
         /** @var RepositoryModel[] $list */
@@ -37,5 +38,7 @@ class PushPlugin extends AbstractPlugin
         }
 
         $parallelProcess->run();
+
+        $this->getLogger()->debug('End plugin', [get_called_class()]);
     }
 }

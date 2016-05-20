@@ -16,6 +16,8 @@ class ExamplePlugin extends AbstractPlugin
      */
     public function execute(RepositoryList $repositories)
     {
+        $this->getLogger()->debug('Run plugin', [get_called_class()]);
+
         foreach ($repositories->getAll() as $model) {
             $path = $model->getPath();
             if ($model->getType() === RepositoryModel::TYPE_ROOT) {
@@ -24,5 +26,7 @@ class ExamplePlugin extends AbstractPlugin
 
             $this->getSymfonyStyle()->writeln(sprintf('<info>%s</info> [%s]', $path, $model->getBranch()));
         }
+
+        $this->getLogger()->debug('End plugin', [get_called_class()]);
     }
 }

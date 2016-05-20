@@ -16,6 +16,7 @@ class ComposerPlugin extends AbstractPlugin
      */
     public function execute(RepositoryList $repositories)
     {
+        $this->getLogger()->debug('Run plugin', [get_called_class()]);
         $composerFilename = $repositories->getProjectModel()->getAbsolutePath().DIRECTORY_SEPARATOR.'composer.json';
         $composerData = json_decode(file_get_contents($composerFilename), true);
 
@@ -62,6 +63,8 @@ class ComposerPlugin extends AbstractPlugin
         if ($updateFlag) {
             $this->getSymfonyStyle()->success('File composer.json updated');
         }
+
+        $this->getLogger()->debug('End plugin', [get_called_class()]);
     }
 
     /**
@@ -79,7 +82,8 @@ class ComposerPlugin extends AbstractPlugin
             $this->getLogger()->debug('Check vendor version', [$packageName]);
 
             if (!array_key_exists($packageNameLower, $vendorsModels)) {
-                $this->getLogger()->debug('Skipped, because not found in vendor list');
+                $this->getLogger()->debug('Skipped, because not found in vendor list',
+                    ['packageNameLower' => $packageNameLower]);
                 continue;
             }
             $model = $vendorsModels[$packageNameLower];
@@ -95,7 +99,7 @@ class ComposerPlugin extends AbstractPlugin
                 $result[$packageName] = $newVersion;
 
                 $this->getLogger()->info(
-                    'Change version',
+                    'Change version 1',
                     [
                         'vendor' => $packageName,
                         'from' => $sourceVersion,
@@ -111,7 +115,7 @@ class ComposerPlugin extends AbstractPlugin
                 $result[$packageName] = $newVersion;
 
                 $this->getLogger()->info(
-                    'Change version',
+                    'Change version 2',
                     [
                         'vendor' => $packageName,
                         'from' => $sourceVersion,

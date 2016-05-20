@@ -15,6 +15,8 @@ class CheckoutPlugin extends AbstractPlugin
      */
     public function execute(RepositoryList $repositories)
     {
+        $this->getLogger()->debug('Run plugin', [get_called_class()]);
+
         $branch = $this->getInput()->getArgument('branch');
         /** @var RepositoryModel[] $list */
         $list = array_reverse($repositories->getAll());
@@ -62,5 +64,7 @@ class CheckoutPlugin extends AbstractPlugin
                 $this->getSymfonyStyle()->writeln(sprintf('%s: switched to [%s]', $model->getPath(), $branch));
             }
         }
+
+        $this->getLogger()->debug('End plugin', [get_called_class()]);
     }
 }

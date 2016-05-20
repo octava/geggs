@@ -21,9 +21,13 @@ class BranchPlugin extends AbstractPlugin
      */
     public function execute(RepositoryList $repositories)
     {
+        $this->getLogger()->debug('Run plugin', [get_called_class()]);
+
         $branch = $repositories->getProjectModel()->getBranch();
         $vendorsWithoutBranch = $this->findVendorsWithoutBranch($repositories->getVendorModels(), $branch);
         $this->createBranches($branch, $vendorsWithoutBranch);
+
+        $this->getLogger()->debug('End plugin', [get_called_class()]);
     }
 
     /**
