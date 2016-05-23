@@ -30,6 +30,12 @@ class PullPlugin extends AbstractPlugin
         foreach ($list as $model) {
             $currentBranch = $model->getBranch();
 
+            $parallelProcess->add(
+                $model->getProvider()->buildCommand('fetch', []),
+                $this->isDryRun(),
+                false
+            );
+
             if ($model->getProvider()->hasRemoteBranch($currentBranch)) {
                 $parallelProcess->add(
                     $model->getProvider()->buildCommand('pull', ['origin', $currentBranch]),
@@ -38,7 +44,8 @@ class PullPlugin extends AbstractPlugin
                 );
             }
 
-            if (!empty($remoteBranch) && $remoteBranch != $currentBranch
+            if (!empty($remoteBranch)
+                && $remoteBranch != $currentBranch
                 && $model->getProvider()->hasRemoteBranch($remoteBranch)
             ) {
                 $parallelProcess->add(

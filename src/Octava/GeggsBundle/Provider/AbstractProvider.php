@@ -120,9 +120,8 @@ abstract class AbstractProvider
      */
     public function hasRemoteBranch($branch)
     {
-        //TODO: check git ls-remote --heads origin
-//        $output = $this->run('show-branch', ['--list', '-r']);
-        $output = $this->run('ls-remote', []);
+        $output = $this->run('show-branch', ['--list', '-r']);
+//        $output = $this->run('ls-remote', []); //super slow
         $branches = GitOutputHelper::extractRemoteBranches($output);
         $result = in_array($branch, $branches);
 
