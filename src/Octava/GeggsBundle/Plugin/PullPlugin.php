@@ -28,31 +28,25 @@ class PullPlugin extends AbstractPlugin
 
         $model = null;
         foreach ($list as $model) {
-//            $currentBranch = $model->getBranch();
+            $currentBranch = $model->getBranch();
 
-            $parallelProcess->add(
-                $model->getProvider()->buildCommand('pull', ['--all']),
-                $this->isDryRun(),
-                false
-            );
+            if ($model->getProvider()->hasRemoteBranch($currentBranch)) {
+                $parallelProcess->add(
+                    $model->getProvider()->buildCommand('pull', ['origin', $currentBranch]),
+                    $this->isDryRun(),
+                    false
+                );
+            }
 
-//            if ($model->getProvider()->hasRemoteBranch($currentBranch)) {
-//                $parallelProcess->add(
-//                    $model->getProvider()->buildCommand('pull', ['origin', $currentBranch]),
-//                    $this->isDryRun(),
-//                    false
-//                );
-//            }
-//
-//            if (!empty($remoteBranch) && $remoteBranch != $currentBranch
-//                && $model->getProvider()->hasRemoteBranch($remoteBranch)
-//            ) {
-//                $parallelProcess->add(
-//                    $model->getProvider()->buildCommand('pull', ['origin', $remoteBranch]),
-//                    $this->isDryRun(),
-//                    false
-//                );
-//            }
+            if (!empty($remoteBranch) && $remoteBranch != $currentBranch
+                && $model->getProvider()->hasRemoteBranch($remoteBranch)
+            ) {
+                $parallelProcess->add(
+                    $model->getProvider()->buildCommand('pull', ['origin', $remoteBranch]),
+                    $this->isDryRun(),
+                    false
+                );
+            }
         }
 
         $parallelProcess->run();

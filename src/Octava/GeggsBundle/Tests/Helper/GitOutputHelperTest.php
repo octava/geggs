@@ -40,7 +40,7 @@ class GitOutputHelperTest extends \PHPUnit_Framework_TestCase
      * @param $pattern
      * @param $expected
      *
-     * @dataProvider dataProviderTestExtractRemoteBranches
+     * @dataProvider dataProviderTestExtractRemoteBranches2
      */
     public function testExtractRemoteBranches($pattern, $expected)
     {
@@ -63,6 +63,28 @@ class GitOutputHelperTest extends \PHPUnit_Framework_TestCase
                 1 => 'master',
                 2 => 'WWW-12992',
                 3 => 'svn',
+            ],
+        ];
+
+        return $data;
+    }
+
+    public function dataProviderTestExtractRemoteBranches2()
+    {
+        $data = [];
+
+        $data[] = [
+            'From git@git.srv.robofx.com:avp-lib/Debug.git
+8694f2ec35c6649fef01faeea93527f746b52c12	HEAD
+1934f7869870fc2b51705a55ef82356d5880e816	refs/heads/TESTAWWW-13119
+47713b1a9c3b9e722a4c139558291dac44459bc1	refs/heads/TESTBWWW-13119
+8694f2ec35c6649fef01faeea93527f746b52c12	refs/heads/master
+8e0d8b467ea0bccfbc97b7813341cd53c0d96429	refs/heads/svn',
+            [
+                'TESTAWWW-13119',
+                'TESTBWWW-13119',
+                'master',
+                'svn',
             ],
         ];
 
