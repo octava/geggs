@@ -27,7 +27,7 @@ class GitOutputHelper
      */
     public static function extractRemoteBranches($subject)
     {
-        $pattern = '/refs\/heads\/(.*) /i';
+        $pattern = '/refs\/heads\/(.*)/i';
         $matches = null;
         preg_match_all($pattern, $subject, $matches);
         $result = empty($matches[1]) ? [] : $matches[1];
