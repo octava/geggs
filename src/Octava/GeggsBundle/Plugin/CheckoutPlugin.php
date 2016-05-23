@@ -31,6 +31,7 @@ class CheckoutPlugin extends AbstractPlugin
             $needCheckout = $needCheckout || $model->hasChanges();
             $needCheckout = $needCheckout || 'master' == $branch;
             $needCheckout = $needCheckout || $model->getProvider()->hasLocalBranch($branch);
+            $needCheckout = $needCheckout || $model->getProvider()->hasRemoteBranch($branch);
 
             if ($model->hasCommits()) {
                 $this->getSymfonyStyle()
