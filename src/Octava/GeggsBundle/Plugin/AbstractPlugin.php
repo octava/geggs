@@ -31,7 +31,6 @@ abstract class AbstractPlugin
     private $symfonyStyle;
 
     /**
-     * ComposerPlugin constructor.
      * @param Config       $config
      * @param SymfonyStyle $io
      * @param Logger       $logger
