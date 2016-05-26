@@ -1,8 +1,6 @@
 <?php
 namespace Octava\GeggsBundle\Helper;
 
-use Symfony\Component\Console\Input\Input;
-use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
