@@ -31,7 +31,7 @@ class ParallelProcess
     {
         $this->symfonyStyle = $symfonyStyle;
         $this->parallelProcessRunner = new ParallelProcessRunner();
-        $this->parallelProcessRunner->setMaxParallelProcess(5);
+        $this->parallelProcessRunner->setMaxParallelProcess(2);
         $this->parallelProcessRunner->setStatusCheckWait(15);
         $this->parallelProcessRunner->getEventDispatcher()->addSubscriber(new ParallelProcessSubscriber($symfonyStyle));
     }
