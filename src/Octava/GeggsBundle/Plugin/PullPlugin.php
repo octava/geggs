@@ -40,18 +40,25 @@ class PullPlugin extends AbstractPlugin
                 $parallelProcess->add(
                     $model->getProvider()->buildCommand('pull', ['origin', $currentBranch]),
                     $this->isDryRun(),
-                    false
+                    true
                 );
             }
 
-            if (!empty($remoteBranch)
-                && $remoteBranch != $currentBranch
-                && $model->getProvider()->hasRemoteBranch($remoteBranch)
-            ) {
+            $needMerge = !empty($remoteBranch) && $remoteBranch != $currentBranch;
+
+            if ($needMerge && $model->getProvider()->hasRemoteBranch($remoteBranch)) {
                 $parallelProcess->add(
                     $model->getProvider()->buildCommand('pull', ['origin', $remoteBranch]),
                     $this->isDryRun(),
-                    false
+                    true
+                );
+            }
+
+            if ($needMerge && $model->getProvider()->hasLocalBranch($remoteBranch)) {
+                $parallelProcess->add(
+                    $model->getProvider()->buildCommand('merge', [$remoteBranch]),
+                    $this->isDryRun(),
+                    true
                 );
             }
         }

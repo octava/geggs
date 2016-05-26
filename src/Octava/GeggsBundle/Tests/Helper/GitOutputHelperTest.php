@@ -32,6 +32,15 @@ class GitOutputHelperTest extends \PHPUnit_Framework_TestCase
                 2 => 'master',
             ],
         ];
+        $data[] = [
+            '  [origin/HEAD] WWW-13119: fix geggs local config
+  [origin/master] WWW-13119: fix geggs local config
+  [origin/svn] WWW-12947 Исправил отображение название страницы в структуре при редактирование',
+            [
+                0 => 'WWW-13119',
+                2 => 'master',
+            ],
+        ];
 
         return $data;
     }
@@ -44,7 +53,7 @@ class GitOutputHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function testExtractRemoteBranches($pattern, $expected)
     {
-        $actual = GitOutputHelper::extractRemoteBranches($pattern);
+        $actual = GitOutputHelper::extractRemoteBranches2($pattern);
 
         $this->assertEquals($actual, $expected);
     }
