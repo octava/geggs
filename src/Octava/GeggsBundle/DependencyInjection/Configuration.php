@@ -22,24 +22,28 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-            ->arrayNode('bin')
-            ->children()
-                ->scalarNode('git')->defaultValue('git')->cannotBeEmpty()->end()
-                ->scalarNode('composer')->defaultValue('composer')->cannotBeEmpty()->end()
-            ->end()
-            ->end()
+                ->arrayNode('bin')
+                    ->children()
+                        ->scalarNode('git')->defaultValue('git')->cannotBeEmpty()->end()
+                        ->scalarNode('composer')->defaultValue('composer')->cannotBeEmpty()->end()
+                    ->end()
+                ->end()
+                ->scalarNode('log_file')
+                    ->defaultValue(null)
+                    ->info('Logging -vvv to file')
+                ->end()
             ->end();
 
         $rootNode
             ->children()
-            ->arrayNode('dir')
-            ->children()
-            ->scalarNode('main')->defaultValue('.')->end()
-            ->arrayNode('vendors')
-            ->prototype('scalar')->end()
-            ->end()
-            ->end()
-            ->end()
+                ->arrayNode('dir')
+                    ->children()
+                        ->scalarNode('main')->defaultValue('.')->end()
+                        ->arrayNode('vendors')
+                            ->prototype('scalar')->end()
+                        ->end()
+                    ->end()
+                ->end()
             ->end();
 
         $rootNode

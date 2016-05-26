@@ -1,6 +1,7 @@
 <?php
 namespace Octava\GeggsBundle\Command;
 
+use Monolog\Handler\StreamHandler;
 use Monolog\Processor\MemoryPeakUsageProcessor;
 use Octava\GeggsBundle\Config;
 use Octava\GeggsBundle\Helper\RepositoryFactory;
@@ -72,6 +73,9 @@ class AbstractCommand extends ContainerAwareCommand
         $this->logger = new Logger($this->getName());
         $this->logger->pushHandler(new ConsoleHandler($output));
         $this->logger->pushProcessor(new MemoryPeakUsageProcessor());
+        if (!empty($this->getConfig()->getLogFilename())) {
+            $this->logger->pushHandler(new StreamHandler($this->getConfig()->getLogFilename()));
+        }
 
         $this->symfonyStyle = new SymfonyStyle($input, $output);
 

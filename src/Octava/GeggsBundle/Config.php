@@ -83,6 +83,18 @@ class Config
     }
 
     /**
+     * @return string
+     */
+    public function getLogFilename()
+    {
+        $filename = $this->config['log_file'];
+        $fileSystem = new Filesystem();
+        $filename = $fileSystem->isAbsolutePath($filename) ?: $this->getMainDir().DIRECTORY_SEPARATOR.$filename;
+
+        return $filename;
+    }
+
+    /**
      * Return plugins from config
      * @param string $commandName
      * @return AbstractPlugin[]

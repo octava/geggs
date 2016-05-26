@@ -2,11 +2,11 @@ octava_geggs:
     bin:
         git: git
         composer: composer
+    log_file: ~
     dir:
         main: .
         vendors:
             - vendor/tonicforhealth/parallel-process-runner
-
     commands:
         status:
             - Octava\GeggsBundle\Plugin\StatusPlugin
