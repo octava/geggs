@@ -71,8 +71,14 @@ class ParallelProcessSubscriber implements EventSubscriberInterface
 
         if (OutputInterface::VERBOSITY_DEBUG <= $this->getSymfonyStyle()->getVerbosity()) {
             $this->getSymfonyStyle()->writeln($process->getCommandLine());
-            $this->getSymfonyStyle()->writeln(trim($process->getErrorOutput()));
-            $this->getSymfonyStyle()->writeln(trim($process->getOutput()));
+            $error = trim($process->getErrorOutput());
+            if ($error) {
+                $this->getSymfonyStyle()->writeln($error);
+            }
+            $output = trim($process->getOutput());
+            if ($output) {
+                $this->getSymfonyStyle()->writeln($output);
+            }
         }
     }
 }
