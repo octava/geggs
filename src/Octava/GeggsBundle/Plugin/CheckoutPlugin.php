@@ -49,30 +49,15 @@ class CheckoutPlugin extends AbstractPlugin
                     $this->getSymfonyStyle()->writeln($output);
                 }
 
-                if ($model->getProvider()->hasRemoteBranch($currentBranch)) {
-                    $this->getSymfonyStyle()->writeln(sprintf('%s pulled from %s', $model->getPath(), $currentBranch));
-
-                    $output = $model->getProvider()->run('pull', ['origin', $currentBranch], $this->isDryRun(), true);
-                    if ($output) {
-                        $this->getSymfonyStyle()->writeln($output);
-                    }
-                }
-
                 $arguments = [];
-                $tracked = $model->getProvider()->hasRemoteBranch($branch)
-                    && !$model->getProvider()->hasLocalBranch($branch);
-                if ($tracked) {
-                    $arguments[] = '--track';
-                }
-                if (!$model->getProvider()->hasLocalBranch($branch)) {
+                if (!$model->getProvider()->hasLocalBranch($branch)
+                    && !$model->getProvider()->hasRemoteBranch($branch)
+                ) {
                     $arguments[] = '-b';
                 }
 
                 $arguments[] = $branch;
                 $model->getProvider()->run('checkout', $arguments, $this->isDryRun());
-                if ($tracked) {
-                    $model->getProvider()->run('pull', ['origin', $branch], $this->isDryRun(), true);
-                }
 
                 $this->getSymfonyStyle()->writeln(sprintf('%s: switched to [%s]', $model->getPath(), $branch));
             }

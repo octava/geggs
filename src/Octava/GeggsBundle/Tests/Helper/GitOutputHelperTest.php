@@ -3,21 +3,28 @@ namespace Octava\GeggsBundle\Tests\Helper;
 
 use Octava\GeggsBundle\Helper\GitOutputHelper;
 
+/**
+ * Class GitOutputHelperTest
+ * @package Octava\GeggsBundle\Tests\Helper
+ */
 class GitOutputHelperTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @param $pattern
-     * @param $expected
+     * @param string $pattern
+     * @param array  $expected
      *
      * @dataProvider dataProviderTestExtractLocalBranches
      */
-    public function testExtractLocalBranches($pattern, $expected)
+    public function testExtractLocalBranches($pattern, array $expected)
     {
         $actual = GitOutputHelper::extractLocalBranches($pattern);
 
         $this->assertEquals($actual, $expected);
     }
 
+    /**
+     * @return array
+     */
     public function dataProviderTestExtractLocalBranches()
     {
         $data = [];
@@ -27,9 +34,9 @@ class GitOutputHelperTest extends \PHPUnit_Framework_TestCase
   [WWW-12986] WWW-12992: modify curl
 * [master] change standart',
             [
-                0 => 'TESTAWWW-13119',
-                1 => 'WWW-12986',
-                2 => 'master',
+                'TESTAWWW-13119',
+                'WWW-12986',
+                'master',
             ],
         ];
 
@@ -37,8 +44,8 @@ class GitOutputHelperTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param $pattern
-     * @param $expected
+     * @param string $pattern
+     * @param array  $expected
      *
      * @dataProvider dataProviderTestExtractRemoteBranches
      */
@@ -49,6 +56,9 @@ class GitOutputHelperTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($actual, $expected);
     }
 
+    /**
+     * @return array
+     */
     public function dataProviderTestExtractRemoteBranches()
     {
         $data = [];
@@ -78,8 +88,8 @@ class GitOutputHelperTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param $pattern
-     * @param $expected
+     * @param string $pattern
+     * @param array  $expected
      *
      * @dataProvider dataProviderTestExtractRemoteBranches2
      */
@@ -90,6 +100,9 @@ class GitOutputHelperTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($actual, $expected);
     }
 
+    /**
+     * @return array
+     */
     public function dataProviderTestExtractRemoteBranches2()
     {
         $data = [];
