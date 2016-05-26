@@ -89,9 +89,10 @@ class Config
      */
     public function getPlugins($commandName)
     {
+        $name = str_replace('-', '_', $commandName);
         $result = [];
-        if (array_key_exists($commandName, $this->commands)) {
-            $result = $this->commands[$commandName];
+        if (array_key_exists($name, $this->commands)) {
+            $result = $this->commands[$name];
         }
 
         return $result;
