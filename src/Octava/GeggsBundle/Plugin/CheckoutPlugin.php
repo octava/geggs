@@ -35,8 +35,12 @@ class CheckoutPlugin extends AbstractPlugin
 
             if ($model->hasCommits()) {
                 $this->getSymfonyStyle()
-                    ->warning(sprintf('Вы делаете checkout "%s" с закоммиченными но не запушенными правками',
-                        $model->getPackageName()));
+                    ->warning(
+                        sprintf(
+                            'Вы делаете checkout "%s" с закоммиченными но не запушенными правками',
+                            $model->getPackageName()
+                        )
+                    );
             }
 
             if ($needCheckout) {
@@ -55,9 +59,9 @@ class CheckoutPlugin extends AbstractPlugin
                 }
 
                 $arguments = [];
-                if ($model->getProvider()->hasRemoteBranch($branch)
-                    && !$model->getProvider()->hasLocalBranch($branch)
-                ) {
+                $tracked = $model->getProvider()->hasRemoteBranch($branch)
+                    && !$model->getProvider()->hasLocalBranch($branch);
+                if ($tracked) {
                     $arguments[] = '--track';
                 }
                 if (!$model->getProvider()->hasLocalBranch($branch)) {
@@ -66,6 +70,9 @@ class CheckoutPlugin extends AbstractPlugin
 
                 $arguments[] = $branch;
                 $model->getProvider()->run('checkout', $arguments, $this->isDryRun());
+                if ($tracked) {
+                    $model->getProvider()->run('pull', ['origin', $branch], $this->isDryRun(), true);
+                }
 
                 $this->getSymfonyStyle()->writeln(sprintf('%s: switched to [%s]', $model->getPath(), $branch));
             }

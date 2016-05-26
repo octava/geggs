@@ -17,11 +17,7 @@ use Composer\Script\ScriptEvents;
 use GrumPHP\Console\Command\Git\DeInitCommand;
 use GrumPHP\Console\Command\Git\InitCommand;
 use Octava\GeggsBundle\Config;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Process\ExecutableFinder;
-use Symfony\Component\Process\ProcessBuilder;
 use Symfony\Component\Yaml\Yaml;
 
 class GrumPHPPlugin implements PluginInterface, EventSubscriberInterface

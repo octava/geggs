@@ -71,7 +71,7 @@ abstract class AbstractProvider
     public function buildCommand($command, array $arguments = [])
     {
         array_unshift($arguments, $command);
-        $bin = $config = $this->config->getGitBin();
+        $bin = $this->config->getGitBin();
         $builder = ProcessBuilder::create($arguments);
         $builder->setPrefix($bin);
 
