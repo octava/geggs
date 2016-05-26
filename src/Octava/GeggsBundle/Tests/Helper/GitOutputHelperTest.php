@@ -49,7 +49,7 @@ class GitOutputHelperTest extends \PHPUnit_Framework_TestCase
      * @param $pattern
      * @param $expected
      *
-     * @dataProvider dataProviderTestExtractRemoteBranches2
+     * @dataProvider dataProviderTestExtractRemoteBranches
      */
     public function testExtractRemoteBranches($pattern, $expected)
     {
@@ -68,14 +68,35 @@ class GitOutputHelperTest extends \PHPUnit_Framework_TestCase
   [origin/WWW-12992] WWW-12992: modify curl
   [origin/svn] WWW-12947 Исправил отображение название страницы в структуре при редактирование',
             [
-                0 => 'HEAD',
-                1 => 'master',
-                2 => 'WWW-12992',
-                3 => 'svn',
+                'HEAD',
+                'master',
+                'WWW-12992',
+                'svn',
+            ],
+        ];
+        $data[] = [
+            '  [origin/master] WWW-13119: fix geggs local config
+  [origin/svn] WWW-12947 Исправил отображение название страницы в структуре при редактирование',
+            [
+                'master',
+                'svn',
             ],
         ];
 
         return $data;
+    }
+
+    /**
+     * @param $pattern
+     * @param $expected
+     *
+     * @dataProvider dataProviderTestExtractRemoteBranches2
+     */
+    public function testExtractRemoteBranches2($pattern, $expected)
+    {
+        $actual = GitOutputHelper::extractRemoteBranches2($pattern);
+
+        $this->assertEquals($actual, $expected);
     }
 
     public function dataProviderTestExtractRemoteBranches2()
