@@ -1,6 +1,7 @@
 <?php
 namespace Octava\GeggsBundle\Plugin;
 
+use Octava\GeggsBundle\Helper\CommentHelper;
 use Octava\GeggsBundle\Helper\RepositoryList;
 
 /**
@@ -34,10 +35,7 @@ class CommitVendorPlugin extends AbstractPlugin
             );
         }
         $branch = $repositories->getProjectModel()->getBranch();
-        if (false === strpos($comment, $branch)) {
-            $comment = $branch.': '.$comment;
-        }
-        $this->getInput()->setOption('message', $comment);
+        $comment = CommentHelper::buildComment($comment, $branch);
 
         foreach ($repositories->getVendorModels() as $model) {
             if ($model->hasChanges()) {

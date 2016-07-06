@@ -1,6 +1,7 @@
 <?php
 namespace Octava\GeggsBundle\Plugin;
 
+use Octava\GeggsBundle\Helper\CommentHelper;
 use Octava\GeggsBundle\Helper\RepositoryList;
 
 /**
@@ -35,6 +36,7 @@ class CommitProjectPlugin extends AbstractPlugin
             );
         }
 
+
         $model = $repositories->getProjectModel();
         if ($model->hasChanges()) {
             $model->getProvider()->run('add', ['.'], $this->isDryRun());
@@ -43,7 +45,7 @@ class CommitProjectPlugin extends AbstractPlugin
                 $params[] = '--no-verify';
             }
             $params[] = '-m';
-            $params[] = $comment;
+            $params[] = CommentHelper::buildComment($comment, $model->getBranch());
             $model->getProvider()->run('commit', $params, $this->isDryRun(), true);
         } else {
             $this->getLogger()->debug('Changes not found', ['commit']);
