@@ -7,7 +7,7 @@ use Octava\GeggsBundle\Model\RepositoryModel;
  * Class RepositoryList
  * @package Octava\GeggsBundle\Helper
  */
-class RepositoryList
+class RepositoryList implements \Countable
 {
     /**
      * @var RepositoryModel[]
@@ -52,6 +52,22 @@ class RepositoryList
     {
         $result = $this->vendorModels;
         array_unshift($result, $this->projectModel);
+
+        return $result;
+    }
+
+    /**
+     * Count elements of an object
+     * @link http://php.net/manual/en/countable.count.php
+     * @return int The custom count as an integer.
+     * </p>
+     * <p>
+     * The return value is cast to an integer.
+     * @since 5.1.0
+     */
+    public function count()
+    {
+        $result = count($this->getVendorModels()) + 1;
 
         return $result;
     }
