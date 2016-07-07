@@ -19,23 +19,6 @@ class CommitProjectPlugin extends AbstractPlugin
         $this->getLogger()->debug('Run plugin', [get_called_class()]);
 
         $comment = $this->getInput()->getOption('message');
-        if (empty($comment)) {
-            $comment = trim(
-                $this->getSymfonyStyle()->ask(
-                    'Enter comment, please',
-                    null,
-                    function ($answer) {
-                        $answer = trim($answer);
-                        if (empty($answer)) {
-                            throw new \RuntimeException('Empty comment');
-                        }
-
-                        return $answer;
-                    }
-                )
-            );
-        }
-
 
         $model = $repositories->getProjectModel();
         if ($model->hasChanges()) {

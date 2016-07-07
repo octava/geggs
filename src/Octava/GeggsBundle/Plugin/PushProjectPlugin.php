@@ -1,7 +1,6 @@
 <?php
 namespace Octava\GeggsBundle\Plugin;
 
-use Octava\GeggsBundle\Helper\ParallelProcess;
 use Octava\GeggsBundle\Helper\RepositoryList;
 use Octava\GeggsBundle\Model\RepositoryModel;
 
@@ -9,7 +8,7 @@ use Octava\GeggsBundle\Model\RepositoryModel;
  * Class PushPlugin
  * @package Octava\GeggsBundle\Plugin
  */
-class PushPlugin extends AbstractPlugin
+class PushProjectPlugin extends AbstractPlugin
 {
     /**
      * @param RepositoryList $repositories
@@ -17,27 +16,25 @@ class PushPlugin extends AbstractPlugin
     public function execute(RepositoryList $repositories)
     {
         $this->getLogger()->debug('Run plugin', [get_called_class()]);
-        $parallelProcess = new ParallelProcess($this->getSymfonyStyle());
 
-        /** @var RepositoryModel[] $list */
-        $list = array_reverse($repositories->getAll());
-        foreach ($list as $model) {
+        $onlyVendor = $this->getInput()->getOption('only-vendor');
+
+        if (!$onlyVendor) {
+            /** @var RepositoryModel $list */
+            $model = $repositories->getProjectModel();
             if ($model->hasCommits() || !$model->hasRemote()) {
                 $branch = $model->getBranch();
 
-                $parallelProcess->add(
-                    $model->getProvider()->buildCommand('push', ['origin', $branch]),
-                    $this->isDryRun(),
-                    false
-                );
+                $model->getProvider()->run('pull', ['origin', $branch], $this->isDryRun(), true);
+                $model->getProvider()->run('push', ['origin', $branch], $this->isDryRun(), true);
 
-                $this->getSymfonyStyle()->writeln(sprintf('%s pushed to %s', $model->getPath(), $branch));
+                $this->getSymfonyStyle()->writeln(sprintf('Project pushed to %s', $branch));
             } else {
                 $this->getLogger()->debug('Nothing to push', ['name' => $model->getPath()]);
             }
+        } else {
+            $this->getLogger()->debug('Only vendor option enabled');
         }
-
-        $parallelProcess->run();
 
         $this->getLogger()->debug('End plugin', [get_called_class()]);
     }

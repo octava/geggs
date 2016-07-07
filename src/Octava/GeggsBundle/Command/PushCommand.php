@@ -14,6 +14,7 @@ class PushCommand extends AbstractCommand
         $this
             ->setName('push')
             ->setDescription('Update remote refs along with associated objects')
-            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Try operation but make no changes');
+            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Try operation but make no changes')
+            ->addOption('only-vendor', null, InputOption::VALUE_NONE, 'Push only vendors');
     }
 }

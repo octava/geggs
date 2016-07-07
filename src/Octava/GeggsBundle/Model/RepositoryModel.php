@@ -179,7 +179,18 @@ class RepositoryModel
     public function hasCommits()
     {
         $branch = $this->getBranch();
-        $output = $this->getProvider()->run('log', ['origin/'.$branch.'..'.$branch]);
+//        $output = $this->getProvider()->run('log', ['origin/'.$branch.'..'.$branch]);
+        $output = $this->getProvider()->run(
+            'log',
+            [
+                '--branches',
+                '--not',
+                '--remotes',
+                '--simplify-by-decoration',
+                '--decorate',
+                '--oneline',
+            ]
+        );
 
         return !empty($output);
     }

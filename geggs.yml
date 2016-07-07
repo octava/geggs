@@ -21,6 +21,7 @@ octava_geggs:
         pull:
             - Octava\GeggsBundle\Plugin\PullPlugin
         push:
-            - Octava\GeggsBundle\Plugin\PushPlugin
+            - Octava\GeggsBundle\Plugin\PushVendorPlugin
+            - Octava\GeggsBundle\Plugin\PushProjectPlugin
         composer:
             - Octava\GeggsBundle\Plugin\ComposerPlugin

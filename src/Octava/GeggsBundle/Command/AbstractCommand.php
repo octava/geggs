@@ -10,6 +10,7 @@ use Octava\GeggsBundle\Plugin\AbstractPlugin;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,12 +26,10 @@ class AbstractCommand extends ContainerAwareCommand
      * @var SymfonyStyle
      */
     private $symfonyStyle;
-
     /**
      * @var Logger
      */
     private $logger;
-
 
     protected function configure()
     {
@@ -53,17 +52,7 @@ class AbstractCommand extends ContainerAwareCommand
             ]
         );
 
-        $list = $this->getRepositoryModelList();
-        $plugins = $this->getPlugins();
-
-        foreach ($plugins as $plugin) {
-            $plugin->execute($list);
-
-            if ($plugin->isPropagationStopped()) {
-                $this->getLogger()->notice('Plugin isPropagationStopped', ['plugin' => get_class($plugin)]);
-                break;
-            }
-        }
+        $this->executePlugins();
 
         $this->getLogger()->debug('Finish', ['command_name' => $this->getName()]);
     }
@@ -137,5 +126,21 @@ class AbstractCommand extends ContainerAwareCommand
         }
 
         return $result;
+    }
+
+    protected function executePlugins()
+    {
+        $list = $this->getRepositoryModelList();
+        /** @var AbstractPlugin[] $plugins */
+        $plugins = $this->getPlugins();
+
+        foreach ($plugins as $plugin) {
+            $plugin->execute($list);
+
+            if ($plugin->isPropagationStopped()) {
+                $this->getLogger()->notice('Plugin isPropagationStopped', ['plugin' => get_class($plugin)]);
+                break;
+            }
+        }
     }
 }
