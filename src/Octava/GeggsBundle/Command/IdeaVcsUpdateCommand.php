@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 
@@ -63,7 +64,30 @@ class IdeaVcsUpdateCommand extends AbstractCommand
             $vendors[] = $tmp;
         }
 
+        $symfonyStyle = new SymfonyStyle($input, $output);
         $newDirs = array_diff($vendors, $existsMap);
+        if (count($newDirs)) {
+            $question = sprintf('Script will add %d new dirs, would you like to continue?', count($newDirs));
+            if ($symfonyStyle->confirm($question, true)) {
+                foreach ($newDirs as $dir) {
+                    $mapping = $simpleXml->component->addChild("mapping", "");
+                    $mapping->addAttribute('directory', $dir);
+                    $mapping->addAttribute('vcs', 'Git');
+                }
+
+                $dom = dom_import_simplexml($simpleXml)->ownerDocument;
+                $dom->preserveWhiteSpace = false;
+                $dom->formatOutput = true;
+
+                if (!$optionDryRun) {
+                    $fileSystem->dumpFile($xmlFilename, $dom->saveXML());
+                }
+
+                $symfonyStyle->success(sprintf('File "%s" updated', $xmlFilename));
+            }
+        } else {
+            $symfonyStyle->note('Changes not found');
+        }
 
         $this->getLogger()->debug('Finish', ['command_name' => $this->getName()]);
     }
