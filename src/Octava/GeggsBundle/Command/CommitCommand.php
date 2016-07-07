@@ -15,6 +15,7 @@ class CommitCommand extends AbstractCommand
     {
         $this
             ->setName('commit')
+            ->setAliases(['ci'])
             ->setDescription('Record changes to the repository')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Try operation but make no changes')
             ->addOption('no-verify', null, InputOption::VALUE_NONE, 'To skip commit checks')
