@@ -1,7 +1,6 @@
 <?php
 namespace Octava\GeggsBundle\Plugin;
 
-use Octava\GeggsBundle\Helper\ParallelProcess;
 use Octava\GeggsBundle\Helper\RepositoryList;
 use Octava\GeggsBundle\Model\RepositoryModel;
 
@@ -17,7 +16,6 @@ class PushVendorPlugin extends AbstractPlugin
     public function execute(RepositoryList $repositories)
     {
         $this->getLogger()->debug('Run plugin', [get_called_class()]);
-        $parallelProcess = new ParallelProcess($this->getSymfonyStyle());
 
         /** @var RepositoryModel[] $list */
         $list = $repositories->getVendorModels();
@@ -25,24 +23,14 @@ class PushVendorPlugin extends AbstractPlugin
             if ($model->hasCommits() || !$model->hasRemote()) {
                 $branch = $model->getBranch();
 
-                $parallelProcess->add(
-                    $model->getProvider()->buildCommand('pull', ['origin', $branch]),
-                    $this->isDryRun(),
-                    false
-                );
-                $parallelProcess->add(
-                    $model->getProvider()->buildCommand('push', ['origin', $branch]),
-                    $this->isDryRun(),
-                    false
-                );
+                $model->getProvider()->run('pull', ['origin', $branch], $this->isDryRun(), true);
+                $model->getProvider()->run('push', ['origin', $branch], $this->isDryRun(), true);
 
                 $this->getSymfonyStyle()->writeln(sprintf('%s pushed to %s', $model->getPath(), $branch));
             } else {
                 $this->getLogger()->debug('Nothing to push', ['name' => $model->getPath()]);
             }
         }
-
-        $parallelProcess->run();
 
         $this->getLogger()->debug('End plugin', [get_called_class()]);
     }
