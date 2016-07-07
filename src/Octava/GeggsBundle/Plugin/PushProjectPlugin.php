@@ -25,7 +25,9 @@ class PushProjectPlugin extends AbstractPlugin
             if ($model->hasCommits() || !$model->hasRemote()) {
                 $branch = $model->getBranch();
 
-                $model->getProvider()->run('pull', ['origin', $branch], $this->isDryRun(), true);
+                if ($model->hasRemote()) {
+                    $model->getProvider()->run('pull', ['origin', $branch], $this->isDryRun(), true);
+                }
                 $model->getProvider()->run('push', ['origin', $branch], $this->isDryRun(), true);
 
                 $this->getSymfonyStyle()->writeln(sprintf('Project pushed to %s', $branch));
