@@ -9,7 +9,7 @@ use Octava\GeggsBundle\Model\RepositoryModel;
  * Class PushPlugin
  * @package Octava\GeggsBundle\Plugin
  */
-class PushPlugin extends AbstractPlugin
+class PushVendorPlugin extends AbstractPlugin
 {
     /**
      * @param RepositoryList $repositories
@@ -20,11 +20,16 @@ class PushPlugin extends AbstractPlugin
         $parallelProcess = new ParallelProcess($this->getSymfonyStyle());
 
         /** @var RepositoryModel[] $list */
-        $list = array_reverse($repositories->getAll());
+        $list = $repositories->getVendorModels();
         foreach ($list as $model) {
             if ($model->hasCommits() || !$model->hasRemote()) {
                 $branch = $model->getBranch();
 
+                $parallelProcess->add(
+                    $model->getProvider()->buildCommand('pull', ['origin', $branch]),
+                    $this->isDryRun(),
+                    false
+                );
                 $parallelProcess->add(
                     $model->getProvider()->buildCommand('push', ['origin', $branch]),
                     $this->isDryRun(),
