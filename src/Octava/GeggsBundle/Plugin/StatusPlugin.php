@@ -1,6 +1,7 @@
 <?php
 namespace Octava\GeggsBundle\Plugin;
 
+use Octava\GeggsBundle\Helper\ProgressBarHelper;
 use Octava\GeggsBundle\Helper\RepositoryList;
 use Octava\GeggsBundle\Model\RepositoryModel;
 use Symfony\Component\Console\Style\OutputStyle;
@@ -18,23 +19,15 @@ class StatusPlugin extends AbstractPlugin
     {
         $this->getLogger()->debug('Run plugin', [get_called_class()]);
 
-        $progressBar = null;
-        if ($this->getSymfonyStyle()->getVerbosity() == OutputStyle::VERBOSITY_NORMAL) {
-            $progressBar = $this->getSymfonyStyle()->createProgressBar($repositories->count());
-            $progressBar->setFormat("%message% \n %current%/%max% [%bar%] %elapsed%\n");
-            $progressBar->setBarCharacter('<comment>#</comment>');
-            $progressBar->setEmptyBarCharacter(' ');
-            $progressBar->setProgressCharacter('');
-            $progressBar->setBarWidth(50);
-        }
+        $progressBar = new ProgressBarHelper($this->getSymfonyStyle());
+        $progressBar->create($repositories->count());
+
         $hasChanges = false;
         $projectBranch = $repositories->getProjectModel()->getBranch();
         $result = [];
         foreach ($repositories->getAll() as $model) {
-            if ($progressBar) {
-                $progressBar->setMessage('Status of ' . ($model->getPath() ?: 'project repository'));
-                $progressBar->advance();
-            }
+            $progressBar->advance('Status of '.($model->getPath() ?: 'project repository'));
+
             $branch = $model->getBranch();
             $status = $model->getRawStatus();
             $hasCommits = $model->hasCommits();
@@ -66,10 +59,7 @@ class StatusPlugin extends AbstractPlugin
             }
         }
 
-        if ($progressBar) {
-            $progressBar->finish();
-            $progressBar->clear();
-        }
+        $progressBar->finish();
 
         if (!$hasChanges) {
             $this->getSymfonyStyle()->writeln('<comment>nothing to commit</comment>');

@@ -11,7 +11,6 @@ octava_geggs:
         status:
             - Octava\GeggsBundle\Plugin\StatusPlugin
         checkout:
-            - Octava\GeggsBundle\Plugin\FetchPlugin
             - Octava\GeggsBundle\Plugin\CheckoutPlugin
         commit:
             - Octava\GeggsBundle\Plugin\BranchPlugin

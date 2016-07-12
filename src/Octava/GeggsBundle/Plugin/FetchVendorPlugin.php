@@ -5,11 +5,7 @@ use Octava\GeggsBundle\Helper\ParallelProcess;
 use Octava\GeggsBundle\Helper\RepositoryList;
 use Octava\GeggsBundle\Model\RepositoryModel;
 
-/**
- * Class FetchPlugin
- * @package Octava\GeggsBundle\Plugin
- */
-class FetchPlugin extends AbstractPlugin
+class FetchVendorPlugin extends AbstractPlugin
 {
     /**
      * @param RepositoryList $repositories
@@ -17,10 +13,11 @@ class FetchPlugin extends AbstractPlugin
     public function execute(RepositoryList $repositories)
     {
         $this->getLogger()->debug('Run plugin', [get_called_class()]);
+
         $parallelProcess = new ParallelProcess($this->getSymfonyStyle());
 
         /** @var RepositoryModel[] $list */
-        $list = array_reverse($repositories->getAll());
+        $list = $repositories->getVendorModels();
 
         $model = null;
         foreach ($list as $model) {

@@ -32,6 +32,7 @@ class PullPlugin extends AbstractPlugin
 
             $parallelProcess->add(
                 $model->getProvider()->buildCommand('fetch', []),
+                $model->getAbsolutePath(),
                 $this->isDryRun(),
                 false
             );
@@ -39,6 +40,7 @@ class PullPlugin extends AbstractPlugin
             if ($model->getProvider()->hasRemoteBranch($currentBranch)) {
                 $parallelProcess->add(
                     $model->getProvider()->buildCommand('pull', ['origin', $currentBranch]),
+                    $model->getAbsolutePath(),
                     $this->isDryRun(),
                     true
                 );
@@ -49,6 +51,7 @@ class PullPlugin extends AbstractPlugin
             if ($needMerge && $model->getProvider()->hasRemoteBranch($remoteBranch)) {
                 $parallelProcess->add(
                     $model->getProvider()->buildCommand('pull', ['origin', $remoteBranch]),
+                    $model->getAbsolutePath(),
                     $this->isDryRun(),
                     true
                 );
@@ -57,6 +60,7 @@ class PullPlugin extends AbstractPlugin
             if ($needMerge && $model->getProvider()->hasLocalBranch($remoteBranch)) {
                 $parallelProcess->add(
                     $model->getProvider()->buildCommand('merge', [$remoteBranch]),
+                    $model->getAbsolutePath(),
                     $this->isDryRun(),
                     true
                 );

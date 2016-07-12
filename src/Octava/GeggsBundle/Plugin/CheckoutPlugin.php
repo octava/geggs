@@ -1,6 +1,7 @@
 <?php
 namespace Octava\GeggsBundle\Plugin;
 
+use Octava\GeggsBundle\Helper\ProgressBarHelper;
 use Octava\GeggsBundle\Helper\RepositoryList;
 use Octava\GeggsBundle\Model\RepositoryModel;
 
@@ -19,7 +20,16 @@ class CheckoutPlugin extends AbstractPlugin
 
         $branch = $this->getInput()->getArgument('branch');
         /** @var RepositoryModel[] $list */
-        $list = array_reverse($repositories->getAll());
+        if ($this->getInput()->getOption('all')) {
+            $list = array_reverse($repositories->getAll());
+        } else {
+            $list = [$repositories->getProjectModel()];
+        }
+
+        $progressBar = new ProgressBarHelper($this->getSymfonyStyle());
+        $this->getSymfonyStyle()->title(__CLASS__);
+        $this->getSymfonyStyle()->newLine();
+        $progressBar->create(count($list));
         foreach ($list as $model) {
             $currentBranch = $model->getBranch();
 
@@ -44,6 +54,8 @@ class CheckoutPlugin extends AbstractPlugin
             }
 
             if ($needCheckout) {
+                $progressBar->advance('Checkout of '.($model->getPath() ?: 'project repository'));
+
                 $output = $model->getProvider()->run('fetch', [], $this->isDryRun());
                 if ($output) {
                     $this->getSymfonyStyle()->writeln($output);
@@ -62,6 +74,8 @@ class CheckoutPlugin extends AbstractPlugin
                 $this->getSymfonyStyle()->writeln(sprintf('%s: switched to [%s]', $model->getPath(), $branch));
             }
         }
+
+        $progressBar->finish();
 
         $this->getLogger()->debug('End plugin', [get_called_class()]);
     }

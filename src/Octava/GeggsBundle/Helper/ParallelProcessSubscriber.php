@@ -17,14 +17,19 @@ class ParallelProcessSubscriber implements EventSubscriberInterface
      * @var SymfonyStyle
      */
     protected $symfonyStyle;
+    /**
+     * @var ProgressBarHelper
+     */
+    protected $progressBarHelper;
 
     /**
      * ParallelProcessSubscriber constructor.
      * @param SymfonyStyle $symfonyStyle
      */
-    public function __construct(SymfonyStyle $symfonyStyle)
+    public function __construct(SymfonyStyle $symfonyStyle, ProgressBarHelper $progressBarHelper = null)
     {
         $this->symfonyStyle = $symfonyStyle;
+        $this->progressBarHelper = $progressBarHelper;
     }
 
     /**
@@ -77,6 +82,8 @@ class ParallelProcessSubscriber implements EventSubscriberInterface
             if ($output) {
                 $this->getSymfonyStyle()->writeln($output);
             }
+        } else {
+            $this->progressBarHelper->advance($process->getWorkingDirectory());
         }
     }
 }

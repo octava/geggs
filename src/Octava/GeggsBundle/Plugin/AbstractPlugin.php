@@ -31,6 +31,11 @@ abstract class AbstractPlugin
     private $symfonyStyle;
 
     /**
+     * @var Input
+     */
+    private $input;
+
+    /**
      * @param Config       $config
      * @param SymfonyStyle $io
      * @param Logger       $logger
@@ -88,15 +93,17 @@ abstract class AbstractPlugin
      */
     public function getInput()
     {
-        $reflection = new \ReflectionClass($this->symfonyStyle);
-        $property = $reflection->getProperty('input');
-        $property->setAccessible(true);
+        if (!$this->input) {
+            $reflection = new \ReflectionClass($this->symfonyStyle);
+            $property = $reflection->getProperty('input');
+            $property->setAccessible(true);
 
-        $result = $property->getValue($this->symfonyStyle);
+            $this->input = $property->getValue($this->symfonyStyle);
 
-        $property->setAccessible(false);
+            $property->setAccessible(false);
+        }
 
-        return $result;
+        return $this->input;
     }
 
     /**
