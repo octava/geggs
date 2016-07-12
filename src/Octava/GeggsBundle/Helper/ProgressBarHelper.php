@@ -83,9 +83,8 @@ class ProgressBarHelper
     {
         if ($this->getSymfonyStyle()->getVerbosity() == OutputStyle::VERBOSITY_NORMAL) {
             $progressBar = $this->getSymfonyStyle()->createProgressBar($count);
-            $progressBar->setFormat(
-                " %message%\n%current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%"
-            );
+            $progressBar->setFormat(" %message%\n%current%/%max% |%bar%| %elapsed:6s% [%memory:6s%]");
+            $progressBar->setBarWidth(50);
 
             $this->setProgressBar($progressBar);
         }

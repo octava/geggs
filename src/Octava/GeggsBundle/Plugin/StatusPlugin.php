@@ -32,7 +32,7 @@ class StatusPlugin extends AbstractPlugin
             $status = $model->getRawStatus();
             $hasCommits = $model->hasCommits();
             $path = $model->getPath();
-            $modelHasChanges = !empty($status) || $hasCommits;
+            $modelHasChanges = !empty($status) || $hasCommits || $projectBranch !== $branch;
             $hasChanges = $hasChanges || $modelHasChanges;
 
             if ($modelHasChanges) {
@@ -62,18 +62,23 @@ class StatusPlugin extends AbstractPlugin
         $progressBar->finish();
 
         if (!$hasChanges) {
-            $this->getSymfonyStyle()->writeln('<comment>nothing to commit</comment>');
+            $this->getSymfonyStyle()->writeln('<comment>no changes</comment>');
         } else {
             foreach ($result as $path => $item) {
                 $this->getSymfonyStyle()->write($item['path']);
                 $this->getSymfonyStyle()->write($item['branch']);
-                if ($item['hasCommits']) {
-                    $this->getSymfonyStyle()->write($item['hasCommits']);
-                }
-                $this->getSymfonyStyle()->writeln('');
+                if (!$item['hasCommits'] && !$item['hasChanges']) {
+                    $this->getSymfonyStyle()->writeln('');
+                    $this->getSymfonyStyle()->write('<comment>no changes</comment>');
+                } else {
+                    if ($item['hasCommits']) {
+                        $this->getSymfonyStyle()->write($item['hasCommits']);
+                    }
+                    $this->getSymfonyStyle()->writeln('');
 
-                if ($item['hasChanges']) {
-                    $this->getSymfonyStyle()->write($item['hasChanges']);
+                    if ($item['hasChanges']) {
+                        $this->getSymfonyStyle()->write($item['hasChanges']);
+                    }
                 }
                 $this->getSymfonyStyle()->writeln('');
             }
