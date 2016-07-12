@@ -27,7 +27,6 @@ class GrumpPhpCommand extends AbstractCommand
         $this
             ->setName('grumphp')
             ->addArgument('action', InputArgument::REQUIRED, 'Command action (init|drop)')
-            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Try operation but make no changes')
             ->setDescription('Record changes to the repository');
     }
 

@@ -101,19 +101,11 @@ class PullVendorPlugin extends AbstractPlugin
 
         $parallelProcess->run();
 
-        $hasConflict = false;
         foreach ($list as $model) {
             if ($model->hasConflicts()) {
-                $this->getSymfonyStyle()->write($model->getPackageName());
-                $this->getSymfonyStyle()->error($model->getConflicts());
-
-                $hasConflict = true;
+                $this->getSymfonyStyle()->writeln($model->getPackageName());
+                $this->getSymfonyStyle()->writeln($model->getConflicts());
             }
-        }
-
-        if ($hasConflict) {
-            $this->getSymfonyStyle()->note('You should solve all conflict');
-            $this->stopPropagation();
         }
 
         $this->getLogger()->debug('End plugin', [get_called_class()]);

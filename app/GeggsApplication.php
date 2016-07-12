@@ -147,6 +147,9 @@ class GeggsApplication extends Application
                 $this->getConfigDefaultPath()
             )
         );
+        $definition->addOption(
+            new InputOption('dry-run', null, InputOption::VALUE_NONE, 'Try operation but make no changes')
+        );
 
         return $definition;
     }

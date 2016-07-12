@@ -20,7 +20,6 @@ class IdeaVcsUpdateCommand extends AbstractCommand
     {
         $this
             ->setName('idea-vcs-update')
-            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Try operation but make no changes')
             ->setDescription('Added vendors to .idea/vcs.xml file');
     }
 

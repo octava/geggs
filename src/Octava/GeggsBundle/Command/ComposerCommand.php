@@ -9,7 +9,6 @@ class ComposerCommand extends AbstractCommand
     {
         $this
             ->setName('composer')
-            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Try operation but make no changes')
             ->setDescription('Record changes to the repository');
     }
 }

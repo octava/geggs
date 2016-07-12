@@ -15,8 +15,7 @@ class CheckoutCommand extends AbstractCommand
         $this
             ->setName('checkout')
             ->addArgument('branch', InputArgument::REQUIRED, 'Branch name')
-            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Try operation but make no changes')
-            ->addOption('all', null, InputOption::VALUE_NONE, 'Checkout with vendors')
+            ->addOption('no-vendors', null, InputOption::VALUE_NONE, 'Checkout without vendors')
             ->setDescription('Checkout a branch or paths to the working tree');
     }
 }

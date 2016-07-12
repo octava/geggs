@@ -10,7 +10,6 @@ class FetchCommand extends AbstractCommand
     {
         $this
             ->setName('fetch')
-            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Try operation but make no changes')
             ->addOption('all', null, InputOption::VALUE_NONE, 'Fetch all remotes')
             ->addOption(
                 'prune',

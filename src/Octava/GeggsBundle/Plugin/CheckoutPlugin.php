@@ -20,19 +20,17 @@ class CheckoutPlugin extends AbstractPlugin
 
         $branch = $this->getInput()->getArgument('branch');
         /** @var RepositoryModel[] $list */
-        if ($this->getInput()->getOption('all')) {
+        if (!$this->getInput()->getOption('no-vendors')) {
             $list = array_reverse($repositories->getAll());
         } else {
             $list = [$repositories->getProjectModel()];
         }
 
         $progressBar = new ProgressBarHelper($this->getSymfonyStyle());
-        $this->getSymfonyStyle()->title(__CLASS__);
-        $this->getSymfonyStyle()->newLine();
         $progressBar->create(count($list));
         foreach ($list as $model) {
             $currentBranch = $model->getBranch();
-
+            $progressBar->advance('Checkout of '.($model->getPath() ?: 'project repository'));
             if ($currentBranch == $branch) {
                 continue;
             }
@@ -54,8 +52,6 @@ class CheckoutPlugin extends AbstractPlugin
             }
 
             if ($needCheckout) {
-                $progressBar->advance('Checkout of '.($model->getPath() ?: 'project repository'));
-
                 $output = $model->getProvider()->run('fetch', [], $this->isDryRun());
                 if ($output) {
                     $this->getSymfonyStyle()->writeln($output);

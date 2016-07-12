@@ -27,7 +27,6 @@ class InitCommand extends AbstractCommand
     {
         $this
             ->setName('init')
-            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Try operation but make no changes')
             ->setDescription('Init geggs environment');
     }
 

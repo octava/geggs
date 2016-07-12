@@ -223,6 +223,8 @@ class RepositoryModel
             ]
         );
 
-        return trim($output);
+        $result = str_replace('U', 'C', trim($output));
+
+        return $result;
     }
 }
