@@ -195,11 +195,34 @@ class RepositoryModel
         return !empty($output);
     }
 
+    public function hasConflicts()
+    {
+        $output = $this->getConflicts();
+
+        return !empty($output);
+    }
+
     /**
      * @return bool
      */
     public function hasRemote()
     {
         return $this->getProvider()->hasRemoteBranch($this->getBranch());
+    }
+
+    /**
+     * @return string
+     */
+    public function getConflicts()
+    {
+        $output = $this->getProvider()->run(
+            'diff',
+            [
+                '--name-status',
+                '--diff-filter=U',
+            ]
+        );
+
+        return trim($output);
     }
 }

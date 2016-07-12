@@ -18,7 +18,8 @@ octava_geggs:
             - Octava\GeggsBundle\Plugin\ComposerPlugin
             - Octava\GeggsBundle\Plugin\CommitProjectPlugin
         pull:
-            - Octava\GeggsBundle\Plugin\PullPlugin
+            - Octava\GeggsBundle\Plugin\PullVendorPlugin
+            - Octava\GeggsBundle\Plugin\PullProjectPlugin
         push:
             - Octava\GeggsBundle\Plugin\PushVendorPlugin
             - Octava\GeggsBundle\Plugin\PushProjectPlugin
