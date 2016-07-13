@@ -1,6 +1,7 @@
 <?php
 namespace Octava\GeggsBundle\Plugin;
 
+use Octava\GeggsBundle\Helper\ComposerHelper;
 use Octava\GeggsBundle\Helper\ProgressBarHelper;
 use Octava\GeggsBundle\Helper\RepositoryList;
 use Octava\GeggsBundle\Model\RepositoryModel;
@@ -18,12 +19,21 @@ class ComposerJsonPlugin extends AbstractPlugin
     public function execute(RepositoryList $repositories)
     {
         $this->getLogger()->debug('Run plugin', [get_called_class()]);
-        $composerFilename = $repositories->getProjectModel()->getAbsolutePath().DIRECTORY_SEPARATOR.'composer.json';
-        $composerData = json_decode(file_get_contents($composerFilename), true);
 
-        if (!$composerData) {
-            throw new \RuntimeException('Json decode error: '.json_last_error_msg());
+        $model = $repositories->getProjectModel();
+        if ($model->hasConflicts()) {
+            if (false !== stripos($model->getConflicts(), ComposerHelper::COMPOSER_JSON)) {
+                $this->getSymfonyStyle()->error('You should resolve composer.json conflict first');
+                $this->stopPropagation();
+
+                return;
+            }
         }
+
+        $composerFilename = $repositories->getProjectModel()->getAbsolutePath().DIRECTORY_SEPARATOR.'composer.json';
+
+        $helper = new ComposerHelper();
+        $composerData = $helper->jsonDecode(file_get_contents($composerFilename));
 
         $data = $repositories->getVendorModels();
         $vendorsModels = [];

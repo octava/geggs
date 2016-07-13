@@ -17,7 +17,7 @@ class PullProjectPlugin extends AbstractPlugin
         if ($this->getInput()->hasArgument('remote-branch')) {
             $remoteBranch = $this->getInput()->getArgument('remote-branch');
         }
-        /** @var RepositoryModel[] $list */
+        /** @var RepositoryModel $list */
         $model = $repositories->getProjectModel();
 
         $currentBranch = $model->getBranch();
@@ -42,36 +42,6 @@ class PullProjectPlugin extends AbstractPlugin
             $model->getProvider()->run('merge', [$remoteBranch], $this->isDryRun(), false);
         }
 
-        if ($model->hasConflicts()) {
-            if (false !== stripos($model->getConflicts(), 'composer.lock')) {
-                $this->getLogger()->debug('Auto-resolve composer.lock conflict');
-                $this->resolveComposerConflict($model, 'composer.lock', $currentBranch, $remoteBranch);
-            }
-
-            $this->getSymfonyStyle()->writeln('project repository');
-            $this->getSymfonyStyle()->writeln($model->getConflicts());
-        }
-
         $this->getLogger()->debug('End plugin', [get_called_class()]);
-    }
-
-    /**
-     * @param RepositoryModel $model
-     * @param string          $currentBranch
-     * @param string          $remoteBranch
-     */
-    protected function resolveComposerConflict(RepositoryModel $model, $filename, $currentBranch, $remoteBranch)
-    {
-        $direction = '--theirs';
-        if ('master' === $currentBranch && 'master' !== $remoteBranch) {
-            $direction = '--ours';
-        }
-        $arguments = [
-            'composer.json',
-            $direction,
-        ];
-
-        $model->getProvider()->run('checkout', $arguments, $this->isDryRun(), false);
-        $model->getProvider()->run('add', [$filename], $this->isDryRun(), false);
     }
 }

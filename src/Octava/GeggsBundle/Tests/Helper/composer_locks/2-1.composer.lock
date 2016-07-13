@@ -16,10 +16,6 @@
         {
             "name": "composer/ca-bundle",
             "time": "2016-04-13 10:13:24"
-        },
-        {
-            "name": "composer/composer",
-            "time": "2016-06-26 14:42:08"
         }
     ]
 }

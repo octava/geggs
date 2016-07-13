@@ -28,3 +28,4 @@ octava_geggs:
             - Octava\GeggsBundle\Plugin\PushProjectPlugin
         composer:
             - Octava\GeggsBundle\Plugin\ComposerJsonPlugin
+            - Octava\GeggsBundle\Plugin\ComposerLockPlugin

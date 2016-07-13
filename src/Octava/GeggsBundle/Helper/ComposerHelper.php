@@ -4,8 +4,21 @@ namespace Octava\GeggsBundle\Helper;
 use Octava\GeggsBundle\Exception\InvalidArgumentException;
 use Octava\GeggsBundle\Exception\RuntimeException;
 
-class ComposerLockHelper
+class ComposerHelper
 {
+    const COMPOSER_JSON = 'composer.json';
+    const COMPOSER_LOCK = 'composer.lock';
+    const COMPOSER_LOCK_CONFLICT = 'composer.lock_cc';
+
+    public function extractAllVendors($composerJson)
+    {
+        $composer = $this->jsonDecode($composerJson);
+        $vendors = !empty($composer['require']) ? array_keys($composer['require']) : [];
+        $vendors = array_merge($vendors, !empty($composer['require-dev']) ? array_keys($composer['require-dev']) : []);
+
+        return $vendors;
+    }
+
     public function diff($lockOne, $lockTwo)
     {
         if (empty($lockOne)) {
@@ -32,32 +45,9 @@ class ComposerLockHelper
     public function jsonDecode($json)
     {
         $result = json_decode($json, true);
-        $error = null;
-        switch (json_last_error()) {
-            case JSON_ERROR_NONE:
-                $error = null;
-                break;
-            case JSON_ERROR_DEPTH:
-                $error = 'Достигнута максимальная глубина стека';
-                break;
-            case JSON_ERROR_STATE_MISMATCH:
-                $error = 'Некорректные разряды или не совпадение режимов';
-                break;
-            case JSON_ERROR_CTRL_CHAR:
-                $error = 'Некорректный управляющий символ';
-                break;
-            case JSON_ERROR_SYNTAX:
-                $error = 'Синтаксическая ошибка, не корректный JSON';
-                break;
-            case JSON_ERROR_UTF8:
-                $error = 'Некорректные символы UTF-8, возможно неверная кодировка';
-                break;
-            default:
-                $error = 'Неизвестная ошибка';
-                break;
-        }
-        if ($error) {
-            throw new RuntimeException($error);
+
+        if (!$result) {
+            throw new RuntimeException('Json decode error: '.json_last_error_msg());
         }
 
         return $result;
@@ -73,11 +63,16 @@ class ComposerLockHelper
             $oneDate = new \DateTime($date);
             if (array_key_exists($name, $two)) {
                 $twoDate = new \DateTime($two[$name]);
-                if ($oneDate < $twoDate) {
+                if ($oneDate != $twoDate) {
                     $result[] = $name;
                 }
+                unset($two[$name]);
+            } else {
+                $result[] = $name;
             }
         }
+
+        $result = array_merge($result, array_diff(array_keys($two), array_keys($one)));
 
         return $result;
     }
