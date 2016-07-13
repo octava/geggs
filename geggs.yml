@@ -27,4 +27,4 @@ octava_geggs:
             - Octava\GeggsBundle\Plugin\PushVendorPlugin
             - Octava\GeggsBundle\Plugin\PushProjectPlugin
         composer:
-            - Octava\GeggsBundle\Plugin\ComposerPlugin
+            - Octava\GeggsBundle\Plugin\ComposerJsonPlugin

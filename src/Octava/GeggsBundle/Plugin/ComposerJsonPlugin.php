@@ -1,6 +1,7 @@
 <?php
 namespace Octava\GeggsBundle\Plugin;
 
+use Octava\GeggsBundle\Helper\ProgressBarHelper;
 use Octava\GeggsBundle\Helper\RepositoryList;
 use Octava\GeggsBundle\Model\RepositoryModel;
 
@@ -8,7 +9,7 @@ use Octava\GeggsBundle\Model\RepositoryModel;
  * Class ComposerPlugin
  * @package Octava\GeggsBundle\Plugin
  */
-class ComposerPlugin extends AbstractPlugin
+class ComposerJsonPlugin extends AbstractPlugin
 {
 
     /**
@@ -76,17 +77,24 @@ class ComposerPlugin extends AbstractPlugin
     protected function changeVersion(array $composerData, array $vendorsModels, $projectBranch)
     {
         $result = [];
+
+        $progressbar = new ProgressBarHelper($this->getSymfonyStyle());
+        $progressbar->create(count($composerData));
+
         foreach ($composerData as $packageName => $sourceVersion) {
             $packageNameLower = strtolower($packageName);
 
             $this->getLogger()->debug('Check vendor version', [$packageName, $sourceVersion]);
 
             if (!array_key_exists($packageNameLower, $vendorsModels)) {
-                $this->getLogger()->debug('Skipped, because not found in vendor list',
-                    ['packageNameLower' => $packageNameLower]);
+                $this->getLogger()->debug(
+                    'Skipped, because not found in vendor list',
+                    ['packageNameLower' => $packageNameLower]
+                );
                 continue;
             }
             $model = $vendorsModels[$packageNameLower];
+            $progressbar->advance($model->getPackageName());
 
             $versionChanged = (false !== strpos($sourceVersion, ' as '));
             $newVersion = 'dev-'.$model->getBranch().' as '.$sourceVersion;
@@ -125,6 +133,7 @@ class ComposerPlugin extends AbstractPlugin
                 $this->getLogger()->debug('No changes', ['vendor' => $packageName]);
             }
         }
+        $progressbar->finish();
 
         return $result;
     }
