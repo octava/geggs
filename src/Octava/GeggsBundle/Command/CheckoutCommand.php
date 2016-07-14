@@ -14,6 +14,7 @@ class CheckoutCommand extends AbstractCommand
     {
         $this
             ->setName('checkout')
+            ->setAliases(['co'])
             ->addArgument('branch', InputArgument::REQUIRED, 'Branch name')
             ->addOption('no-vendors', null, InputOption::VALUE_NONE, 'Checkout without vendors')
             ->setDescription('Checkout a branch or paths to the working tree');

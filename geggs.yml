@@ -5,8 +5,7 @@ octava_geggs:
     log_file: ~
     dir:
         main: .
-        vendors:
-            - vendor/tonicforhealth/parallel-process-runner
+        vendors: ~
     commands:
         fetch:
             - Octava\GeggsBundle\Plugin\FetchProjectPlugin
@@ -14,7 +13,6 @@ octava_geggs:
         pull:
             - Octava\GeggsBundle\Plugin\PullVendorPlugin
             - Octava\GeggsBundle\Plugin\PullProjectPlugin
-            - Octava\GeggsBundle\Plugin\ComposerLockPlugin
         status:
             - Octava\GeggsBundle\Plugin\StatusPlugin
         checkout:
@@ -28,6 +26,6 @@ octava_geggs:
         push:
             - Octava\GeggsBundle\Plugin\PushVendorPlugin
             - Octava\GeggsBundle\Plugin\PushProjectPlugin
-        composer:
+        update-composer:
             - Octava\GeggsBundle\Plugin\ComposerJsonPlugin
             - Octava\GeggsBundle\Plugin\ComposerLockPlugin

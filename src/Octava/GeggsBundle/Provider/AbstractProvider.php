@@ -96,6 +96,8 @@ abstract class AbstractProvider
             $process = new Process($cmd);
             $process->setTty($tty);
             $process->mustRun();
+            $process->setTimeout(null);
+            $process->setIdleTimeout(null);
             $process->setWorkingDirectory($this->getRepositoryPath());
         }
 

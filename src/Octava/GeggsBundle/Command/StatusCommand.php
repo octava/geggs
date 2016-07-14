@@ -11,6 +11,7 @@ class StatusCommand extends AbstractCommand
     {
         $this
             ->setName('status')
+            ->setAliases(['st'])
             ->setDescription('Show the working tree status');
     }
 }
