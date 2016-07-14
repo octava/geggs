@@ -42,6 +42,7 @@ class CheckoutPlugin extends AbstractPlugin
             $needCheckout = $needCheckout || $model->getProvider()->hasRemoteBranch($branch);
 
             if ($model->hasCommits()) {
+                $this->getSymfonyStyle()->newLine();
                 $this->getSymfonyStyle()
                     ->warning(
                         sprintf(
@@ -67,6 +68,7 @@ class CheckoutPlugin extends AbstractPlugin
                 $arguments[] = $branch;
                 $model->getProvider()->run('checkout', $arguments, $this->isDryRun());
 
+                $this->getSymfonyStyle()->newLine();
                 $this->getSymfonyStyle()->writeln(sprintf('%s: switched to [%s]', $model->getPath(), $branch));
             }
         }
