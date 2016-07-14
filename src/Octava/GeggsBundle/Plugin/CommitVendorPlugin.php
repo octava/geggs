@@ -2,6 +2,7 @@
 namespace Octava\GeggsBundle\Plugin;
 
 use Octava\GeggsBundle\Helper\CommentHelper;
+use Octava\GeggsBundle\Helper\ProgressBarHelper;
 use Octava\GeggsBundle\Helper\RepositoryList;
 
 /**
@@ -21,8 +22,26 @@ class CommitVendorPlugin extends AbstractPlugin
         $branch = $repositories->getProjectModel()->getBranch();
         $comment = CommentHelper::buildComment($comment, $branch);
 
-        foreach ($repositories->getVendorModels() as $model) {
+        $vendors = $repositories->getVendorModels();
+        $this->getSymfonyStyle()->newLine();
+        $progressBar = new ProgressBarHelper($this->getSymfonyStyle());
+        $progressBar->create(count($vendors));
+
+        foreach ($vendors as $model) {
+            $progressBar->advance($model->getPath());
             if ($model->hasChanges()) {
+                if ($model->hasConflicts()) {
+                    $progressBar->finish();
+
+                    $this->getSymfonyStyle()->newLine();
+                    $this->getSymfonyStyle()->error('Conflicts detected');
+                    $this->getSymfonyStyle()->writeln($model->getPath());
+                    $this->getSymfonyStyle()->writeln($model->getConflicts());
+                    $this->getSymfonyStyle()->newLine();
+                    $this->stopPropagation();
+                    break;
+                }
+
                 $model->getProvider()->run('add', ['.'], $this->isDryRun());
 
                 $params = [];
@@ -31,6 +50,7 @@ class CommitVendorPlugin extends AbstractPlugin
                 }
                 $params[] = '-m';
                 $params[] = $comment;
+                $this->getSymfonyStyle()->newLine();
                 $model->getProvider()->run('commit', $params, $this->isDryRun(), true);
 
                 $this->getSymfonyStyle()->writeln(
@@ -40,6 +60,7 @@ class CommitVendorPlugin extends AbstractPlugin
                 $this->getLogger()->debug('Changes not found', ['commit vendor']);
             }
         }
+        $progressBar->finish();
 
         $this->getLogger()->debug('End plugin', [get_called_class()]);
     }
