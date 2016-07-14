@@ -12,8 +12,9 @@ octava_geggs:
             - Octava\GeggsBundle\Plugin\FetchProjectPlugin
             - Octava\GeggsBundle\Plugin\FetchVendorPlugin
         pull:
-
+            - Octava\GeggsBundle\Plugin\PullVendorPlugin
             - Octava\GeggsBundle\Plugin\PullProjectPlugin
+            - Octava\GeggsBundle\Plugin\ComposerLockPlugin
         status:
             - Octava\GeggsBundle\Plugin\StatusPlugin
         checkout:
@@ -21,7 +22,8 @@ octava_geggs:
         commit:
             - Octava\GeggsBundle\Plugin\BranchPlugin
             - Octava\GeggsBundle\Plugin\CommitVendorPlugin
-            - Octava\GeggsBundle\Plugin\ComposerPlugin
+            - Octava\GeggsBundle\Plugin\ComposerJsonPlugin
+            - Octava\GeggsBundle\Plugin\ComposerLockPlugin
             - Octava\GeggsBundle\Plugin\CommitProjectPlugin
         push:
             - Octava\GeggsBundle\Plugin\PushVendorPlugin
