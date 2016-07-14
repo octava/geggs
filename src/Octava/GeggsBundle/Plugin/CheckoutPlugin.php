@@ -53,7 +53,7 @@ class CheckoutPlugin extends AbstractPlugin
             }
 
             if ($needCheckout) {
-                $output = $model->getProvider()->run('fetch', [], $this->isDryRun());
+                $output = $model->getProvider()->run('fetch', [], $this->isDryRun(), true);
                 if ($output) {
                     $this->getSymfonyStyle()->writeln($output);
                 }
@@ -65,10 +65,9 @@ class CheckoutPlugin extends AbstractPlugin
                     $arguments[] = '-b';
                 }
 
+                $this->getSymfonyStyle()->newLine(2);
                 $arguments[] = $branch;
-                $model->getProvider()->run('checkout', $arguments, $this->isDryRun());
-
-                $this->getSymfonyStyle()->newLine();
+                $model->getProvider()->run('checkout', $arguments, $this->isDryRun(), true);
                 $this->getSymfonyStyle()->writeln(sprintf('%s: switched to [%s]', $model->getPath(), $branch));
             }
         }
