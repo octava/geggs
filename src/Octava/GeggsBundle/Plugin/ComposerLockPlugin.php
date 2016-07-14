@@ -38,7 +38,7 @@ class ComposerLockPlugin extends AbstractPlugin
                     if ($vendorsForUpdate) {
                         $cmd = $this->getConfig()->getComposerBin().' update '.implode(' ', $vendorsForUpdate);
                         $this->getSymfonyStyle()->writeln($cmd);
-                        $model->getProvider()->runCommand($cmd, $this->isDryRun(), false);
+                        $model->getProvider()->runCommand($cmd, $this->isDryRun(), true);
                     }
                     $model->getProvider()->run('add', [ComposerHelper::COMPOSER_LOCK], $this->isDryRun(), false);
                 } catch (\Exception $e) {
