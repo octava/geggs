@@ -12,6 +12,7 @@ use Symfony\Component\Console\Style\OutputStyle;
  */
 class StatusPlugin extends AbstractPlugin
 {
+    const MASTER_BRANCH = 'master';
     /**
      * @param RepositoryList $repositories
      */
@@ -26,35 +27,59 @@ class StatusPlugin extends AbstractPlugin
         $projectBranch = $repositories->getProjectModel()->getBranch();
         $result = [];
         foreach ($repositories->getAll() as $model) {
-            $progressBar->advance('Status of '.($model->getPath() ?: 'project repository'));
+            $progressBar->advance('Status of ' . ($model->getPath() ?: 'project repository'));
 
             $branch = $model->getBranch();
-            $status = $model->getRawStatus();
-            $hasCommits = $model->hasCommits();
-            $path = $model->getPath();
-            $modelHasChanges = !empty($status) || $hasCommits || $projectBranch !== $branch;
+            $differentBranch = $projectBranch != $branch && ('master' == $projectBranch || ('master' != $projectBranch && 'master' != $branch));
+            $path = $model->getType() === RepositoryModel::TYPE_ROOT ? 'project repository' : $model->getPath();
+
+            /**
+             * Check full state of repo
+             * Also check branch of repo (if it is not according to project branch - show it)
+             */
+            $modelHasChanges = $model->hasChanges() || $model->hasCommits() || $differentBranch;
             $hasChanges = $hasChanges || $modelHasChanges;
 
             if ($modelHasChanges) {
-                $result[$path] = ['path' => null, 'branch' => null, 'hasCommits' => null, 'hasChanges' => null];
-                if ($model->getType() === RepositoryModel::TYPE_ROOT) {
-                    $path = 'project repository';
-                }
-                $result[$path] = ['path' => null, 'branch' => null, 'hasCommits' => null, 'hasChanges' => null];
+                $result[$path] = ['path' => null, 'branch' => null, 'hasCommits' => null, 'hasChanges' => null, 'hasConflicts' => null];
                 $result[$path]['path'] = sprintf('<info>%s</info> ', $path);
 
-                if ($projectBranch !== $branch) {
-                    $result[$path]['branch'] = sprintf('<error>[%s -> %s]</error>', $branch, $projectBranch);
-                } else {
+                if ($projectBranch == $branch) {
                     $result[$path]['branch'] = sprintf('<question>[%s]</question>', $branch);
+                } else {
+                    if (self::MASTER_BRANCH == $projectBranch) {
+                        if ($projectBranch != $branch) {
+                            $result[$path]['branch'] = sprintf('<error>[%s -> %s]</error>', $branch, $projectBranch);
+                        }
+                    } else {
+                        if (self::MASTER_BRANCH == $branch) {
+                            if ($model->hasChanges()) {
+                                $result[$path]['branch'] = sprintf('<error>[%s -> %s]</error>', $branch, $projectBranch);
+                            } else {
+                                $result[$path]['branch'] = sprintf('<error>[%s]</error>', $branch);
+                            }
+                        } else {
+                            if ($projectBranch != $branch) {
+                                if ($model->hasChanges()) {
+                                    $result[$path]['branch'] = sprintf('<error>[%s -> %s]</error>', $branch, $projectBranch);
+                                } else {
+                                    $result[$path]['branch'] = sprintf('<error>[%s]</error>', $branch);
+                                }
+                            }
+                        }
+                    }
                 }
 
-                if ($hasCommits) {
+                if ($model->hasCommits()) {
                     $result[$path]['hasCommits'] = ' <comment>(has unpushed commits)</comment>';
                 }
 
-                if ($status) {
-                    $result[$path]['hasChanges'] = $status;
+                if ($model->hasConflicts()) {
+                    $result[$path]['hasConflicts'] = ' <error>(has conflicts)</error>';
+                }
+
+                if ($model->hasChanges()) {
+                    $result[$path]['hasChanges'] = $model->getRawStatus();
                 }
             }
         }
@@ -69,15 +94,18 @@ class StatusPlugin extends AbstractPlugin
                 $this->getSymfonyStyle()->write($item['branch']);
                 if (!$item['hasCommits'] && !$item['hasChanges']) {
                     $this->getSymfonyStyle()->writeln('');
-                    $this->getSymfonyStyle()->write('<comment>no changes</comment>');
                 } else {
                     if ($item['hasCommits']) {
                         $this->getSymfonyStyle()->write($item['hasCommits']);
+                    }
+                    if ($item['hasConflicts']) {
+                        $this->getSymfonyStyle()->write($item['hasConflicts']);
                     }
                     $this->getSymfonyStyle()->writeln('');
 
                     if ($item['hasChanges']) {
                         $this->getSymfonyStyle()->write($item['hasChanges']);
+                        $this->getSymfonyStyle()->writeln('');
                     }
                 }
                 $this->getSymfonyStyle()->writeln('');
