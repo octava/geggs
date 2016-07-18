@@ -30,7 +30,7 @@ class ComposerJsonPlugin extends AbstractPlugin
             }
         }
 
-        $composerFilename = $repositories->getProjectModel()->getAbsolutePath().DIRECTORY_SEPARATOR.'composer.json';
+        $composerFilename = $repositories->getProjectModel()->getAbsolutePath() . DIRECTORY_SEPARATOR . 'composer.json';
 
         $helper = new ComposerHelper();
         $composerData = $helper->jsonDecode(file_get_contents($composerFilename));
@@ -79,9 +79,9 @@ class ComposerJsonPlugin extends AbstractPlugin
     }
 
     /**
-     * @param array             $composerData
+     * @param array $composerData
      * @param RepositoryModel[] $vendorsModels
-     * @param string            $projectBranch
+     * @param string $projectBranch
      * @return array
      */
     protected function changeVersion(array $composerData, array $vendorsModels, $projectBranch)
@@ -103,44 +103,42 @@ class ComposerJsonPlugin extends AbstractPlugin
                 );
                 continue;
             }
+
             $model = $vendorsModels[$packageNameLower];
+            $branch = $model->getBranch();
             $progressbar->advance($model->getPackageName());
 
-            $versionChanged = (false !== strpos($sourceVersion, ' as '));
-            $newVersion = 'dev-'.$model->getBranch().' as '.$sourceVersion;
-
-            if (!$versionChanged &&
-                ($model->hasChanges()
-                    || 'master' != $model->getBranch())
-            ) {
-                $result[$packageName] = $newVersion;
-
-                $this->getLogger()->debug(
-                    'Change version 1',
-                    [
-                        'vendor' => $packageName,
-                        'from' => $sourceVersion,
-                        'to' => $newVersion,
-                    ]
-                );
-            } elseif (
-                'master' == $projectBranch
-                && $versionChanged
-            ) {
-                $ar = explode('as', $sourceVersion);
-                $newVersion = trim($ar[1]);
-                $result[$packageName] = $newVersion;
-
-                $this->getLogger()->debug(
-                    'Change version 2',
-                    [
-                        'vendor' => $packageName,
-                        'from' => $sourceVersion,
-                        'to' => $newVersion,
-                    ]
-                );
+            $parts = explode('as', $sourceVersion);
+            $parts = array_map('trim', $parts);
+            if (1 == count($parts)) {
+                $currentBranch = 'master';
+                $baseVersion = $parts[0];
+            } elseif (2 == count($parts)) {
+                $currentBranch = $parts[0];
+                $baseVersion = $parts[1];
             } else {
-                $this->getLogger()->debug('No changes', ['vendor' => $packageName]);
+                throw new \RuntimeException(sprintf('Invalid %s version %s in composer.json', $packageName, $sourceVersion));
+            }
+
+            if ($currentBranch != $branch) {
+                if ('master' == $branch) {
+                    $newVersion = $baseVersion;
+                } else {
+                    $newVersion = 'dev-' . $branch . ' as ' . $baseVersion;
+                }
+
+                if ($sourceVersion !== $newVersion) {
+                    $result[$packageName] = $newVersion;
+
+                    $this->getLogger()->debug(
+                        'Change version',
+                        [
+                            'vendor' => $packageName,
+                            'from' => $sourceVersion,
+                            'to' => $newVersion,
+                        ]
+                    );
+                }
             }
         }
         $progressbar->finish();
