@@ -79,7 +79,7 @@ class ProgressBarHelper
      * @param int $count
      * @return ProgressBar
      */
-    public function create($count)
+    public function create($count = 0)
     {
         if ($this->getSymfonyStyle()->getVerbosity() == OutputStyle::VERBOSITY_NORMAL) {
             $progressBar = $this->getSymfonyStyle()->createProgressBar($count);

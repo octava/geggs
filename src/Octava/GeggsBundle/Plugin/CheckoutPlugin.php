@@ -19,20 +19,56 @@ class CheckoutPlugin extends AbstractPlugin
         $this->getLogger()->debug('Run plugin', [get_called_class()]);
 
         $branch = $this->getInput()->getArgument('branch');
+        $noVendors = $this->getInput()->getOption('no-vendors');
+        $customVendors = $this->getInput()->getOption('repo');
+        $allRepositories = $this->getRepositoriesWithKeys($repositories);
+
         /** @var RepositoryModel[] $list */
-        if (!$this->getInput()->getOption('no-vendors')) {
-            $list = array_reverse($repositories->getAll());
+        $list = [];
+        if ($noVendors) {
+            $list = [null];
+        } elseif (!empty($customVendors)) {
+            foreach ($customVendors as $vendor) {
+                foreach ($allRepositories as $repositoryModel) {
+                    $originalPackageName = strtolower($repositoryModel->getPackageName());
+                    $vendor = rtrim($vendor, DIRECTORY_SEPARATOR);
+                    $packageName = strtolower(substr($vendor, strlen($originalPackageName) * -1));
+                    if ($originalPackageName == $packageName) {
+                        $list[] = $repositoryModel->getPackageName();
+                        break;
+                    }
+                }
+            }
         } else {
-            $list = [$repositories->getProjectModel()];
+            $list = array_keys($allRepositories);
         }
+        $list = array_unique($list);
 
         $progressBar = new ProgressBarHelper($this->getSymfonyStyle());
-        $progressBar->create(count($list));
-        foreach ($list as $model) {
+        $progressBar->create(count($allRepositories));
+        /** @var RepositoryModel $model */
+        foreach ($allRepositories as $packageName => $model) {
             $currentBranch = $model->getBranch();
-            $progressBar->advance('Checkout of '.($model->getPath() ?: 'project repository'));
+            $progressBar->advance('Checkout '.($model->getPath() ?: 'project repository'));
             if ($currentBranch == $branch) {
                 continue;
+            }
+
+            if ($model->hasCommits()) {
+                $this->getSymfonyStyle()->newLine();
+                $this->getSymfonyStyle()
+                    ->warning(
+                        sprintf(
+                            'Вы делаете checkout "%s" с закоммиченными но не запушенными правками',
+                            $model->getPackageName()
+                        )
+                    );
+            }
+
+            if ($model->getType() == RepositoryModel::TYPE_ROOT) {
+                $needCheckout = true;
+            } else {
+                //
             }
 
             $needCheckout = $model->getType() == RepositoryModel::TYPE_ROOT;
@@ -75,5 +111,19 @@ class CheckoutPlugin extends AbstractPlugin
         $progressBar->finish();
 
         $this->getLogger()->debug('End plugin', [get_called_class()]);
+    }
+
+    /**
+     * @param RepositoryList $repositoryList
+     * @return RepositoryModel[]
+     */
+    protected function getRepositoriesWithKeys(RepositoryList $repositoryList)
+    {
+        $result = [];
+        foreach ($repositoryList->getAll() as $repository) {
+            $result[$repository->getPackageName()] = $repository;
+        }
+
+        return $result;
     }
 }
