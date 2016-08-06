@@ -19,11 +19,6 @@
         },
         "classmap": [
             "app/GeggsApplication.php"
-        ],
-        "exclude-from-classmap": [
-            "/Tests/",
-            "/test/",
-            "/tests/"
         ]
     },
     "require": {
@@ -47,17 +42,12 @@
     "bin": [
         "bin/geggs"
     ],
-    "config": {
-        "bin-dir": "bin"
-    },
     "extra": {
         "symfony-app-dir": "app",
         "symfony-bin-dir": "bin",
         "symfony-var-dir": "var",
-        "symfony-web-dir": "web",
-        "symfony-tests-dir": "tests",
         "branch-alias": {
-            "dev-master": "3.0-dev"
+            "dev-master": "3.1-dev"
         }
     }
 }

@@ -1,5 +1,6 @@
 {
     "directories": [
+        "app",
         "src"
     ],
     "blacklist": [
@@ -25,7 +26,9 @@
                 ".md",
                 "Tester",
                 "Tests",
-                "tests",
+                "tests"
+            ],
+            "notPath": [
                 "phpunit/",
                 "phpdocumentor/",
                 "leaphub/phpcs-symfony2-standard",
