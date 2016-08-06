@@ -1,9 +1,12 @@
 <?php
 namespace Octava\GeggsBundle\Command;
 
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
+/**
+ * Class FetchCommand
+ * @package Octava\GeggsBundle\Command
+ */
 class FetchCommand extends AbstractCommand
 {
     protected function configure()

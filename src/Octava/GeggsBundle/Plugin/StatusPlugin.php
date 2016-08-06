@@ -4,7 +4,6 @@ namespace Octava\GeggsBundle\Plugin;
 use Octava\GeggsBundle\Helper\ProgressBarHelper;
 use Octava\GeggsBundle\Helper\RepositoryList;
 use Octava\GeggsBundle\Model\RepositoryModel;
-use Symfony\Component\Console\Style\OutputStyle;
 
 /**
  * Class StatusPlugin
@@ -13,6 +12,7 @@ use Symfony\Component\Console\Style\OutputStyle;
 class StatusPlugin extends AbstractPlugin
 {
     const MASTER_BRANCH = 'master';
+
     /**
      * @param RepositoryList $repositories
      */
@@ -27,7 +27,7 @@ class StatusPlugin extends AbstractPlugin
         $projectBranch = $repositories->getProjectModel()->getBranch();
         $result = [];
         foreach ($repositories->getAll() as $model) {
-            $progressBar->advance('Status of ' . ($model->getPath() ?: 'project repository'));
+            $progressBar->advance('Status of '.($model->getPath() ?: 'project repository'));
 
             $branch = $model->getBranch();
             $differentBranch = $projectBranch != $branch && ('master' == $projectBranch || ('master' != $projectBranch && 'master' != $branch));
@@ -41,7 +41,13 @@ class StatusPlugin extends AbstractPlugin
             $hasChanges = $hasChanges || $modelHasChanges;
 
             if ($modelHasChanges) {
-                $result[$path] = ['path' => null, 'branch' => null, 'hasCommits' => null, 'hasChanges' => null, 'hasConflicts' => null];
+                $result[$path] = [
+                    'path' => null,
+                    'branch' => null,
+                    'hasCommits' => null,
+                    'hasChanges' => null,
+                    'hasConflicts' => null,
+                ];
                 $result[$path]['path'] = sprintf('<info>%s</info> ', $path);
 
                 if ($projectBranch == $branch) {
@@ -54,14 +60,22 @@ class StatusPlugin extends AbstractPlugin
                     } else {
                         if (self::MASTER_BRANCH == $branch) {
                             if ($model->hasChanges()) {
-                                $result[$path]['branch'] = sprintf('<error>[%s -> %s]</error>', $branch, $projectBranch);
+                                $result[$path]['branch'] = sprintf(
+                                    '<error>[%s -> %s]</error>',
+                                    $branch,
+                                    $projectBranch
+                                );
                             } else {
                                 $result[$path]['branch'] = sprintf('<error>[%s]</error>', $branch);
                             }
                         } else {
                             if ($projectBranch != $branch) {
                                 if ($model->hasChanges()) {
-                                    $result[$path]['branch'] = sprintf('<error>[%s -> %s]</error>', $branch, $projectBranch);
+                                    $result[$path]['branch'] = sprintf(
+                                        '<error>[%s -> %s]</error>',
+                                        $branch,
+                                        $projectBranch
+                                    );
                                 } else {
                                     $result[$path]['branch'] = sprintf('<error>[%s]</error>', $branch);
                                 }

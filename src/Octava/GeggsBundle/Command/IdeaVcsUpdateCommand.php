@@ -1,16 +1,16 @@
 <?php
 namespace Octava\GeggsBundle\Command;
 
-use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Yaml\Yaml;
 
+/**
+ * Class IdeaVcsUpdateCommand
+ * @package Octava\GeggsBundle\Command
+ */
 class IdeaVcsUpdateCommand extends AbstractCommand
 {
     /**
@@ -52,7 +52,7 @@ class IdeaVcsUpdateCommand extends AbstractCommand
         $simpleXml = simplexml_load_file($xmlFilename);
         foreach ($simpleXml->component->children() as $child) {
             /** @var \SimpleXMLElement $child */
-            $existsMap[] = (string)$child->attributes()['directory'];
+            $existsMap[] = (string) $child->attributes()['directory'];
         }
         $vendors = [];
         foreach ($this->getRepositoryModelList()->getAll() as $model) {
@@ -69,7 +69,7 @@ class IdeaVcsUpdateCommand extends AbstractCommand
             $question = sprintf('Script will add %d new dirs, would you like to continue?', count($newDirs));
             if ($symfonyStyle->confirm($question, true)) {
                 foreach ($newDirs as $dir) {
-                    $mapping = $simpleXml->component->addChild("mapping", "");
+                    $mapping = $simpleXml->component->addChild('mapping', '');
                     $mapping->addAttribute('directory', $dir);
                     $mapping->addAttribute('vcs', 'Git');
                 }

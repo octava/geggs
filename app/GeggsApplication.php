@@ -36,7 +36,7 @@ class GeggsApplication extends Application
      */
     public function __construct()
     {
-        parent::__construct(self::APP_NAME, trim(file_get_contents(dirname(__DIR__).'/version')));
+        parent::__construct(self::APP_NAME, '@package_version@');
 
         $this->registerCommands($this->getBundleDir().DIRECTORY_SEPARATOR.'Command', $this->getNamespace());
         $this->registerCommands(getcwd().DIRECTORY_SEPARATOR.'.geggs'.DIRECTORY_SEPARATOR.'Command', 'Project\\Geggs');

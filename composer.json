@@ -19,7 +19,8 @@
         },
         "classmap": [
             "app/GeggsApplication.php"
-        ]
+        ],
+        "exclude-from-classmap": ["/Tests/", "/test/", "/tests/"]
     },
     "require": {
         "php": ">=5.5.9",

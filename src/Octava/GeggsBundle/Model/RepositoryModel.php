@@ -63,7 +63,7 @@ class RepositoryModel
     public function __toString()
     {
         $result = [];
-        $result[] = (string)$this->getPath();
+        $result[] = (string) $this->getPath();
         $branch = $this->getBranch();
         if ($branch) {
             $result[] = ' ('.$branch.')';
@@ -178,8 +178,6 @@ class RepositoryModel
      */
     public function hasCommits()
     {
-        $branch = $this->getBranch();
-//        $output = $this->getProvider()->run('log', ['origin/'.$branch.'..'.$branch]);
         $output = $this->getProvider()->run(
             'log',
             [
@@ -195,6 +193,9 @@ class RepositoryModel
         return !empty($output);
     }
 
+    /**
+     * @return bool
+     */
     public function hasConflicts()
     {
         $output = $this->getConflicts();

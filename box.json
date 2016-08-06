@@ -15,8 +15,7 @@
             "name": [
                 "*.php",
                 "*.json",
-                "*.twig",
-                "*.exe"
+                "*.twig"
             ],
             "exclude": [
                 ".gitignore",
@@ -31,13 +30,14 @@
                 "sensio/distribution-bundle",
                 "squizlabs/php_codesniffer"
             ],
-            "in": ""
+            "in": "vendor"
         }
     ],
     "compactors": [
         "Herrera\\Box\\Compactor\\Json",
         "Herrera\\Box\\Compactor\\Php"
     ],
+    "git-version": "package_version",
     "compression": "GZ",
     "main": "bin/geggs",
     "output": "geggs.phar",

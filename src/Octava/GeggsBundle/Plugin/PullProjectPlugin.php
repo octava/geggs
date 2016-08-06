@@ -4,6 +4,10 @@ namespace Octava\GeggsBundle\Plugin;
 use Octava\GeggsBundle\Helper\RepositoryList;
 use Octava\GeggsBundle\Model\RepositoryModel;
 
+/**
+ * Class PullProjectPlugin
+ * @package Octava\GeggsBundle\Plugin
+ */
 class PullProjectPlugin extends AbstractPlugin
 {
     /**
