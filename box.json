@@ -1,11 +1,16 @@
 {
     "directories": [
-        "src/"
+        "src"
+    ],
+    "blacklist": [
+        "Octava/GeggsBundle/Tests"
     ],
     "files": [
         "LICENSE",
         "README.md",
-        "geggs.yml"
+        "geggs.yml",
+        "vendor/autoload.php",
+        "vendor/herrera-io/phar-update/res/schema.json"
     ],
     "finder": [
         {
@@ -18,17 +23,21 @@
                 ".gitignore",
                 ".idea",
                 ".md",
-                "phpunit",
                 "Tester",
                 "Tests",
                 "tests",
+                "phpunit/",
+                "phpdocumentor/",
                 "leaphub/phpcs-symfony2-standard",
                 "phpro/grumphp",
-                "sensio/distribution-bundle",
                 "squizlabs/php_codesniffer"
             ],
             "in": "vendor"
         }
+    ],
+    "compactors": [
+        "Herrera\\Box\\Compactor\\Json",
+        "Herrera\\Box\\Compactor\\Php"
     ],
     "git-version": "package_version",
     "compression": "GZ",

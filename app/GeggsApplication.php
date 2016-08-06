@@ -6,7 +6,6 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Filesystem\Filesystem;
@@ -87,6 +86,38 @@ class GeggsApplication extends Application
         return $this->configDefaultPath;
     }
 
+    /**
+     * @return ContainerBuilder
+     */
+    public function getContainer()
+    {
+        if ($this->container) {
+            return $this->container;
+        }
+
+        // Load cli options:
+        $input = new ArgvInput();
+        $configPath = $input->getParameterOption(['--config', '-c'], $this->getConfigDefaultPath());
+
+        // Make sure to set the full path when it is declared relative
+        // This will fix some issues in windows.
+        $filesystem = new Filesystem();
+        if (!$filesystem->isAbsolutePath($configPath)) {
+            $configPath = getcwd().DIRECTORY_SEPARATOR.$configPath;
+        }
+
+        $this->container = new ContainerBuilder();
+        $extension = new OctavaGeggsExtension();
+        $this->container->registerExtension($extension);
+
+        $loader = new YamlFileLoader($this->container, new FileLocator(dirname($configPath)));
+        $loader->load(basename($configPath));
+
+        $this->container->compile();
+
+        return $this->container;
+    }
+
     protected function registerCommands($dir, $namespace)
     {
         if (!is_dir($dir)) {
@@ -123,9 +154,7 @@ class GeggsApplication extends Application
             ) {
                 /** @var \Octava\GeggsBundle\Command\AbstractCommand $command */
                 $command = $r->newInstance();
-                if ($command instanceof ContainerAwareInterface) {
-                    $command->setContainer($this->getContainer());
-                }
+                $command->setContainer($this->getContainer());
 
                 $this->add($command);
             }
@@ -152,38 +181,6 @@ class GeggsApplication extends Application
         );
 
         return $definition;
-    }
-
-    /**
-     * @return ContainerBuilder
-     */
-    public function getContainer()
-    {
-        if ($this->container) {
-            return $this->container;
-        }
-
-        // Load cli options:
-        $input = new ArgvInput();
-        $configPath = $input->getParameterOption(['--config', '-c'], $this->getConfigDefaultPath());
-
-        // Make sure to set the full path when it is declared relative
-        // This will fix some issues in windows.
-        $filesystem = new Filesystem();
-        if (!$filesystem->isAbsolutePath($configPath)) {
-            $configPath = getcwd().DIRECTORY_SEPARATOR.$configPath;
-        }
-
-        $this->container = new ContainerBuilder();
-        $extension = new OctavaGeggsExtension();
-        $this->container->registerExtension($extension);
-
-        $loader = new YamlFileLoader($this->container, new FileLocator(dirname($configPath)));
-        $loader->load(basename($configPath));
-
-        $this->container->compile();
-
-        return $this->container;
     }
 
     private function getNamespace()

@@ -20,42 +20,30 @@
         "classmap": [
             "app/GeggsApplication.php"
         ],
-        "exclude-from-classmap": ["/Tests/", "/test/", "/tests/"]
+        "exclude-from-classmap": [
+            "/Tests/",
+            "/test/",
+            "/tests/"
+        ]
     },
     "require": {
         "php": ">=5.5.9",
         "symfony/console": "~2.8|~3.0",
-        "symfony/framework-bundle": "~2.8|~3.0",
+        "symfony/dependency-injection": "~2.8|~3.0",
         "symfony/monolog-bridge": "~2.8|~3.0",
         "symfony/process": "~2.8|~3.0",
-        "symfony/twig-bundle": "~2.8|~3.0",
-        "symfony/validator": "~2.8|~3.0",
         "symfony/yaml": "~2.8|~3.0",
         "tonicforhealth/parallel-process-runner": "~1.0",
-        "padraic/phar-updater": "^1.0",
         "herrera-io/phar-update": "^2.0"
     },
     "require-dev": {
         "leaphub/phpcs-symfony2-standard": "^2.0",
         "phpro/grumphp": "^0.7.0",
-        "sensio/distribution-bundle": "^5.0",
         "symfony/var-dumper": "~2.8|~3.0",
         "phpunit/phpunit": "^4.8|^5.3"
     },
     "repositories": [],
-    "scripts": {
-        "post-install-cmd": [
-            "@symfony"
-        ],
-        "post-update-cmd": [
-            "@symfony"
-        ],
-        "symfony": [
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
-        ]
-    },
+    "scripts": {},
     "bin": [
         "bin/geggs"
     ],
