@@ -5,10 +5,7 @@
     "files": [
         "LICENSE",
         "README.md",
-        "geggs.yml",
-        "version",
-        "vendor/autoload.php",
-        "vendor/herrera-io/phar-update/res/schema.json"
+        "geggs.yml"
     ],
     "finder": [
         {
@@ -32,10 +29,6 @@
             ],
             "in": "vendor"
         }
-    ],
-    "compactors": [
-        "Herrera\\Box\\Compactor\\Json",
-        "Herrera\\Box\\Compactor\\Php"
     ],
     "git-version": "package_version",
     "compression": "GZ",

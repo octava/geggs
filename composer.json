@@ -24,8 +24,6 @@
     },
     "require": {
         "php": ">=5.5.9",
-        "herrera-io/phar-update": "~2.0",
-        "kherge/amend": "^3.0",
         "symfony/console": "~2.8|~3.0",
         "symfony/framework-bundle": "~2.8|~3.0",
         "symfony/monolog-bridge": "~2.8|~3.0",
@@ -33,7 +31,9 @@
         "symfony/twig-bundle": "~2.8|~3.0",
         "symfony/validator": "~2.8|~3.0",
         "symfony/yaml": "~2.8|~3.0",
-        "tonicforhealth/parallel-process-runner": "~1.0"
+        "tonicforhealth/parallel-process-runner": "~1.0",
+        "padraic/phar-updater": "^1.0",
+        "herrera-io/phar-update": "^2.0"
     },
     "require-dev": {
         "leaphub/phpcs-symfony2-standard": "^2.0",
