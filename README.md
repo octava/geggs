@@ -27,6 +27,6 @@ Run `sudo geggs self-update` for update geggs
 3. Create phar and manifest 
 ```
 box build
-manifest publish:gh-pages Octava/geggs -vvv
+manifest publish:gh-pages octava/geggs -vvv
 ```
 4. Go to github and upload new `geggs.phar`
