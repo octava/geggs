@@ -5,6 +5,23 @@ Git eggs. Proxy command of git.
 
 ## Installation
 
+Download last release version from https://github.com/octava/geggs/releases and move to bin directory.
+
+Now just run geggs in order to run geggs
+
+Example
+```
+curl -O https://github.com/octava/geggs/releases/download/3.1.0/geggs.phar
+chmod +x geggs.phar
+sudo mv geggs.phar /usr/local/bin/geggs
+```
+
+## Update
+
+Run `sudo geggs self-update` for update geggs
+
+## Installation
+
 Download geggs.phar from [latest release](https://github.com/octava/geggs/releases/latest).
 
 ## Init
