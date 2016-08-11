@@ -1,6 +1,7 @@
 <?php
 namespace Octava;
 
+use Octava\GeggsBundle\Command\SelfUpdateCommand;
 use Octava\GeggsBundle\DependencyInjection\OctavaGeggsExtension;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application;
@@ -159,6 +160,8 @@ class GeggsApplication extends Application
                 $this->add($command);
             }
         }
+
+        $this->add(new SelfUpdateCommand());
     }
 
     /**
