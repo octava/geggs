@@ -13,6 +13,7 @@ use Symfony\Component\Console\Style\OutputStyle;
 class StatusPlugin extends AbstractPlugin
 {
     const MASTER_BRANCH = 'master';
+
     /**
      * @param RepositoryList $repositories
      */
@@ -30,18 +31,21 @@ class StatusPlugin extends AbstractPlugin
             $progressBar->advance('Status of ' . ($model->getPath() ?: 'project repository'));
 
             $branch = $model->getBranch();
-            $differentBranch = $projectBranch != $branch && ('master' == $projectBranch || ('master' != $projectBranch && 'master' != $branch));
+            $differentBranch = $this->isDifferentBranches($projectBranch, $branch);
             $path = $model->getType() === RepositoryModel::TYPE_ROOT ? 'project repository' : $model->getPath();
 
             /**
              * Check full state of repo
              * Also check branch of repo (if it is not according to project branch - show it)
              */
-            $modelHasChanges = $model->hasChanges() || $model->hasCommits() || $differentBranch;
+            $unpushedCommits = $model->getUnpushedCommits();
+            $gitHasUnpushedCommits = $model->hasCommits();
+            $gitHasChanges = $model->hasChanges();
+            $modelHasChanges = $gitHasChanges || $gitHasUnpushedCommits || $differentBranch;
             $hasChanges = $hasChanges || $modelHasChanges;
 
             if ($modelHasChanges) {
-                $result[$path] = ['path' => null, 'branch' => null, 'hasCommits' => null, 'hasChanges' => null, 'hasConflicts' => null];
+                $result[$path] = ['path' => null, 'branch' => null, 'hasCommits' => null, 'hasChanges' => null, 'hasConflicts' => null, 'unpushedCommit' => null];
                 $result[$path]['path'] = sprintf('<info>%s</info> ', $path);
 
                 if ($projectBranch == $branch) {
@@ -53,14 +57,14 @@ class StatusPlugin extends AbstractPlugin
                         }
                     } else {
                         if (self::MASTER_BRANCH == $branch) {
-                            if ($model->hasChanges()) {
+                            if ($gitHasChanges) {
                                 $result[$path]['branch'] = sprintf('<error>[%s -> %s]</error>', $branch, $projectBranch);
                             } else {
                                 $result[$path]['branch'] = sprintf('<error>[%s]</error>', $branch);
                             }
                         } else {
                             if ($projectBranch != $branch) {
-                                if ($model->hasChanges()) {
+                                if ($gitHasChanges) {
                                     $result[$path]['branch'] = sprintf('<error>[%s -> %s]</error>', $branch, $projectBranch);
                                 } else {
                                     $result[$path]['branch'] = sprintf('<error>[%s]</error>', $branch);
@@ -70,7 +74,7 @@ class StatusPlugin extends AbstractPlugin
                     }
                 }
 
-                if ($model->hasCommits()) {
+                if ($gitHasUnpushedCommits) {
                     $result[$path]['hasCommits'] = ' <comment>(has unpushed commits)</comment>';
                 }
 
@@ -78,40 +82,81 @@ class StatusPlugin extends AbstractPlugin
                     $result[$path]['hasConflicts'] = ' <error>(has conflicts)</error>';
                 }
 
-                if ($model->hasChanges()) {
-                    $result[$path]['hasChanges'] = $model->getRawStatus();
+                if ($gitHasChanges) {
+                    $result[$path]['hasChanges'] = ltrim($model->getRawStatus());
+                }
+
+                if ($gitHasUnpushedCommits) {
+                    $result[$path]['unpushedCommit'] .= "<comment>Unpushed commits:</comment>\n";
+                    foreach ($unpushedCommits as $unpushedCommit) {
+                        $result[$path]['unpushedCommit'] .= sprintf("<comment>%s</comment>\n", $unpushedCommit);
+                    }
                 }
             }
         }
-
         $progressBar->finish();
 
         if (!$hasChanges) {
             $this->getSymfonyStyle()->writeln('<comment>no changes</comment>');
         } else {
-            foreach ($result as $path => $item) {
-                $this->getSymfonyStyle()->write($item['path']);
-                $this->getSymfonyStyle()->write($item['branch']);
-                if (!$item['hasCommits'] && !$item['hasChanges']) {
-                    $this->getSymfonyStyle()->writeln('');
-                } else {
-                    if ($item['hasCommits']) {
-                        $this->getSymfonyStyle()->write($item['hasCommits']);
-                    }
-                    if ($item['hasConflicts']) {
-                        $this->getSymfonyStyle()->write($item['hasConflicts']);
-                    }
-                    $this->getSymfonyStyle()->writeln('');
-
-                    if ($item['hasChanges']) {
-                        $this->getSymfonyStyle()->write($item['hasChanges']);
-                        $this->getSymfonyStyle()->writeln('');
-                    }
-                }
-                $this->getSymfonyStyle()->writeln('');
-            }
+            $this->displayStatus($result);
         }
 
         $this->getLogger()->debug('End plugin', [get_called_class()]);
+    }
+
+    /**
+     * @param $projectBranch
+     * @param $branch
+     * @return bool
+     */
+    protected function isDifferentBranches($projectBranch, $branch)
+    {
+        $differentBranch = false;
+        if ($projectBranch == $branch) {
+            if (self::MASTER_BRANCH != $projectBranch) {
+                $differentBranch = true;
+                return $differentBranch;
+            }
+            return $differentBranch;
+        } else {
+            if (self::MASTER_BRANCH != $branch) {
+                $differentBranch = true;
+                return $differentBranch;
+            }
+            return $differentBranch;
+        }
+    }
+
+    /**
+     * @param array $data
+     */
+    protected function displayStatus(array $data)
+    {
+        foreach ($data as $path => $item) {
+            $this->getSymfonyStyle()->write($item['path']);
+            $this->getSymfonyStyle()->write($item['branch']);
+            if (!$item['hasCommits'] && !$item['hasChanges']) {
+                $this->getSymfonyStyle()->writeln('');
+            } else {
+                if ($item['hasCommits']) {
+                    $this->getSymfonyStyle()->write($item['hasCommits']);
+                }
+                if ($item['hasConflicts']) {
+                    $this->getSymfonyStyle()->write($item['hasConflicts']);
+                }
+                $this->getSymfonyStyle()->writeln('');
+
+                if ($item['hasChanges']) {
+                    $this->getSymfonyStyle()->write($item['hasChanges']);
+                    $this->getSymfonyStyle()->writeln('');
+                }
+                if ($item['unpushedCommit']) {
+                    $this->getSymfonyStyle()->writeln('');
+                    $this->getSymfonyStyle()->write($item['unpushedCommit']);
+                }
+            }
+            $this->getSymfonyStyle()->writeln('');
+        }
     }
 }

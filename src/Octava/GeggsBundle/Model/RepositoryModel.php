@@ -36,9 +36,9 @@ class RepositoryModel
 
     /**
      * RepositoryModel constructor.
-     * @param string           $type
-     * @param string           $rootPath
-     * @param string           $path
+     * @param string $type
+     * @param string $rootPath
+     * @param string $path
      * @param AbstractProvider $provider
      */
     public function __construct($type, $rootPath, $path, AbstractProvider $provider)
@@ -50,14 +50,6 @@ class RepositoryModel
     }
 
     /**
-     * @return AbstractProvider
-     */
-    public function getProvider()
-    {
-        return $this->provider;
-    }
-
-    /**
      * @return string
      */
     public function __toString()
@@ -66,36 +58,10 @@ class RepositoryModel
         $result[] = (string)$this->getPath();
         $branch = $this->getBranch();
         if ($branch) {
-            $result[] = ' ('.$branch.')';
+            $result[] = ' (' . $branch . ')';
         }
 
         return implode('', $result);
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * Result of `git status` command
-     * @return string
-     */
-    public function getRawStatus()
-    {
-        return $this->getProvider()->run('status', ['--porcelain']);
-    }
-
-    /**
-     * @return string
-     */
-    public function getAbsolutePath()
-    {
-        return $this->absolutePath;
     }
 
     /**
@@ -105,6 +71,24 @@ class RepositoryModel
     public function getPath()
     {
         return substr($this->absolutePath, strlen($this->rootPath) + 1);
+    }
+
+    /**
+     * @return string
+     */
+    public function getBranch()
+    {
+        $result = $this->getProvider()->run('rev-parse', ['--abbrev-ref', 'HEAD']);
+
+        return $result;
+    }
+
+    /**
+     * @return AbstractProvider
+     */
+    public function getProvider()
+    {
+        return $this->provider;
     }
 
     /**
@@ -122,6 +106,23 @@ class RepositoryModel
         }
 
         return $result;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAbsolutePath()
+    {
+        return $this->absolutePath;
     }
 
     /**
@@ -154,16 +155,6 @@ class RepositoryModel
     }
 
     /**
-     * @return string
-     */
-    public function getBranch()
-    {
-        $result = $this->getProvider()->run('rev-parse', ['--abbrev-ref', 'HEAD']);
-
-        return $result;
-    }
-
-    /**
      * @return bool
      */
     public function hasChanges()
@@ -174,12 +165,19 @@ class RepositoryModel
     }
 
     /**
+     * Result of `git status` command
+     * @return string
+     */
+    public function getRawStatus()
+    {
+        return $this->getProvider()->run('status', ['--porcelain']);
+    }
+
+    /**
      * @return bool
      */
     public function hasCommits()
     {
-        $branch = $this->getBranch();
-//        $output = $this->getProvider()->run('log', ['origin/'.$branch.'..'.$branch]);
         $output = $this->getProvider()->run(
             'log',
             [
@@ -191,8 +189,40 @@ class RepositoryModel
                 '--oneline',
             ]
         );
+        $result = trim($output);
 
-        return !empty($output);
+        return !empty($result);
+    }
+
+    /**
+     * @return array
+     */
+    public function getUnpushedCommits()
+    {
+        $branch = $this->getBranch();
+        $output = $this->getProvider()->run('log', ['origin/' . $branch . '..' . $branch]);
+
+        $result = [];
+        $i = -1;
+        foreach (explode("\n", $output) as $line) {
+            $line = trim($line);
+            if (empty($line)) {
+                continue;
+            }
+            if (preg_match('/^commit\s+.*$/i', $line)) {
+                $i++;
+                $result[$i] = 'no text for commit';
+                continue;
+            }
+            if (preg_match('/^Date:\s*/', $line)) {
+                continue;
+            }
+            if ($i >= 0) {
+                $result[$i] = $line;
+            }
+        }
+
+        return $result;
     }
 
     public function hasConflicts()
@@ -200,14 +230,6 @@ class RepositoryModel
         $output = $this->getConflicts();
 
         return !empty($output);
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasRemote()
-    {
-        return $this->getProvider()->hasRemoteBranch($this->getBranch());
     }
 
     /**
@@ -226,5 +248,13 @@ class RepositoryModel
         $result = str_replace('U', 'C', trim($output));
 
         return $result;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasRemote()
+    {
+        return $this->getProvider()->hasRemoteBranch($this->getBranch());
     }
 }
