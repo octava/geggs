@@ -9,27 +9,38 @@ use Octava\GeggsBundle\Helper\RepositoryList;
 use Octava\GeggsBundle\Plugin\AbstractPlugin;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Bridge\Monolog\Logger;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\Input;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class AbstractCommand
  * @package Octava\GeggsBundle\Command
  */
-class AbstractCommand extends ContainerAwareCommand
+class AbstractCommand extends Command
 {
     /**
      * @var SymfonyStyle
      */
     private $symfonyStyle;
+
+    use ContainerAwareTrait;
     /**
      * @var Logger
      */
     private $logger;
+
+    /**
+     * @return ContainerInterface
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
 
     protected function configure()
     {

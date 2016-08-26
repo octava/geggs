@@ -3,7 +3,6 @@ namespace Octava\GeggsBundle\Command;
 
 use Octava\GeggsApplication;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 
@@ -58,15 +57,14 @@ class InitCommand extends AbstractCommand
 
             try {
                 $finder = new Finder();
-                $finder->files()->name('*.twig')->in($source);
+                $finder->files()->in($source);
                 foreach ($finder as $file) {
                     /** @var \Symfony\Component\Finder\SplFileInfo $file */
 
                     $targetFilename = $configDir.DIRECTORY_SEPARATOR.$file->getRelativePathname();
-                    $targetFilename = str_replace('.twig', '', $targetFilename);
 
                     if (!$input->getOption('dry-run')) {
-                        $this->renderFile($file->getRelativePathname(), $targetFilename, []);
+                        $this->renderFile($file->getRelativePathname(), $targetFilename);
                     }
 
                     $this->getLogger()->debug('Copy file', ['source' => $file->getPath(), 'target' => $targetFilename]);
@@ -90,36 +88,12 @@ class InitCommand extends AbstractCommand
         return $exitCode;
     }
 
-    protected function render($template, $parameters)
-    {
-        $twig = $this->getTwigEnvironment();
-
-        return $twig->render($template, $parameters);
-    }
-
-    /**
-     * Get the twig environment that will render skeletons
-     * @return \Twig_Environment
-     */
-    protected function getTwigEnvironment()
-    {
-        return new \Twig_Environment(
-            new \Twig_Loader_Filesystem($this->skeletonDirs),
-            [
-                'debug' => true,
-                'cache' => false,
-                'strict_variables' => true,
-                'autoescape' => false,
-            ]
-        );
-    }
-
-    protected function renderFile($template, $target, $parameters)
+    protected function renderFile($template, $target)
     {
         if (!is_dir(dirname($target))) {
             mkdir(dirname($target), 0777, true);
         }
 
-        return file_put_contents($target, $this->render($template, $parameters));
+        return file_put_contents($target, $template);
     }
 }

@@ -5,6 +5,10 @@ use Octava\GeggsBundle\Helper\ParallelProcess;
 use Octava\GeggsBundle\Helper\RepositoryList;
 use Octava\GeggsBundle\Model\RepositoryModel;
 
+/**
+ * Class FetchVendorPlugin
+ * @package Octava\GeggsBundle\Plugin
+ */
 class FetchVendorPlugin extends AbstractPlugin
 {
     /**

@@ -50,18 +50,52 @@ class RepositoryModel
     }
 
     /**
+     * @return AbstractProvider
+     */
+    public function getProvider()
+    {
+        return $this->provider;
+    }
+
+    /**
      * @return string
      */
     public function __toString()
     {
         $result = [];
-        $result[] = (string)$this->getPath();
+        $result[] = (string) $this->getPath();
         $branch = $this->getBranch();
         if ($branch) {
-            $result[] = ' (' . $branch . ')';
+            $result[] = ' ('.$branch.')';
         }
 
         return implode('', $result);
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Result of `git status` command
+     * @return string
+     */
+    public function getRawStatus()
+    {
+        return $this->getProvider()->run('status', ['--porcelain']);
+    }
+
+    /**
+     * @return string
+     */
+    public function getAbsolutePath()
+    {
+        return $this->absolutePath;
     }
 
     /**
@@ -71,24 +105,6 @@ class RepositoryModel
     public function getPath()
     {
         return substr($this->absolutePath, strlen($this->rootPath) + 1);
-    }
-
-    /**
-     * @return string
-     */
-    public function getBranch()
-    {
-        $result = $this->getProvider()->run('rev-parse', ['--abbrev-ref', 'HEAD']);
-
-        return $result;
-    }
-
-    /**
-     * @return AbstractProvider
-     */
-    public function getProvider()
-    {
-        return $this->provider;
     }
 
     /**
@@ -106,23 +122,6 @@ class RepositoryModel
         }
 
         return $result;
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAbsolutePath()
-    {
-        return $this->absolutePath;
     }
 
     /**
@@ -155,6 +154,16 @@ class RepositoryModel
     }
 
     /**
+     * @return string
+     */
+    public function getBranch()
+    {
+        $result = $this->getProvider()->run('rev-parse', ['--abbrev-ref', 'HEAD']);
+
+        return $result;
+    }
+
+    /**
      * @return bool
      */
     public function hasChanges()
@@ -162,15 +171,6 @@ class RepositoryModel
         $raw = $this->getRawStatus();
 
         return !empty($raw);
-    }
-
-    /**
-     * Result of `git status` command
-     * @return string
-     */
-    public function getRawStatus()
-    {
-        return $this->getProvider()->run('status', ['--porcelain']);
     }
 
     /**
@@ -225,11 +225,22 @@ class RepositoryModel
         return $result;
     }
 
+    /**
+     * @return bool
+     */
     public function hasConflicts()
     {
         $output = $this->getConflicts();
 
         return !empty($output);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasRemote()
+    {
+        return $this->getProvider()->hasRemoteBranch($this->getBranch());
     }
 
     /**
@@ -248,13 +259,5 @@ class RepositoryModel
         $result = str_replace('U', 'C', trim($output));
 
         return $result;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasRemote()
-    {
-        return $this->getProvider()->hasRemoteBranch($this->getBranch());
     }
 }
