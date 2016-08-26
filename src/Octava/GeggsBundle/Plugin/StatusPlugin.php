@@ -116,16 +116,14 @@ class StatusPlugin extends AbstractPlugin
         if ($projectBranch == $branch) {
             if (self::MASTER_BRANCH != $projectBranch) {
                 $differentBranch = true;
-                return $differentBranch;
             }
-            return $differentBranch;
         } else {
             if (self::MASTER_BRANCH != $branch) {
                 $differentBranch = true;
-                return $differentBranch;
             }
-            return $differentBranch;
         }
+
+        return $differentBranch;
     }
 
     /**
