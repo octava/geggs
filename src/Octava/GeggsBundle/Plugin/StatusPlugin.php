@@ -4,7 +4,6 @@ namespace Octava\GeggsBundle\Plugin;
 use Octava\GeggsBundle\Helper\ProgressBarHelper;
 use Octava\GeggsBundle\Helper\RepositoryList;
 use Octava\GeggsBundle\Model\RepositoryModel;
-use Symfony\Component\Console\Style\OutputStyle;
 
 /**
  * Class StatusPlugin
@@ -106,8 +105,8 @@ class StatusPlugin extends AbstractPlugin
     }
 
     /**
-     * @param $projectBranch
-     * @param $branch
+     * @param string $projectBranch
+     * @param string $branch
      * @return bool
      */
     protected function isDifferentBranches($projectBranch, $branch)
