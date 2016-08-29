@@ -44,7 +44,7 @@ After that you are ready to work with **geggs**
 ulimit -Sn 4096; box build --verbose
 ```
 * Go to github and upload new `geggs.phar` into new release
-* Publish new manifest
+* Publish new [manifest](https://github.com/cpliakas/manifest-publisher)
 ```
 manifest publish:gh-pages octava/geggs -vvv
 ```
