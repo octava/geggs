@@ -1,7 +1,13 @@
 [
     {
         "name": "geggs.phar",
-        "sha1": "4ff22e0066f3cb17fb33b6bb2429126159f1876d",
+        "sha1": "af57a3e0345e79272dcb55b681abd6f64bbbf922",
+        "url": "https://github.com/octava/geggs/releases/download/3.1.1/geggs.phar",
+        "version": "3.1.1"
+    },
+    {
+        "name": "geggs.phar",
+        "sha1": "0c562cc4f808bf1759aa0f84519744af47230ef2",
         "url": "https://github.com/octava/geggs/releases/download/3.1.0/geggs.phar",
         "version": "3.1.0"
     },
