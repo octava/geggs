@@ -94,11 +94,13 @@ abstract class AbstractProvider
         $process = null;
         if (!$isDryRun) {
             $process = new Process($cmd);
+            
             $process->setTty($tty);
-            $process->mustRun();
             $process->setTimeout(null);
             $process->setIdleTimeout(null);
             $process->setWorkingDirectory($this->getRepositoryPath());
+            
+            $process->mustRun();
         }
 
         return $process;
